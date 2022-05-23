@@ -31,6 +31,10 @@
 		{
 			"Name": "ExampleCustomDataInterface",
 			"Enabled": true
+		},
+		{
+			"Name": "Metasound",
+			"Enabled": true
 		}
 	]
 }
