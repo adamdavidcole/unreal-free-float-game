@@ -90,9 +90,9 @@ void printGameState() {
   Serial.print("[ ");
   Serial.print(playerAIsEngaged);
   Serial.print(", ");
-  Serial.print(gy1y);
-  Serial.print(", ");
   Serial.print(gy1z);
+  Serial.print(", ");
+  Serial.print(gy1y);
   Serial.print(" ]");
   
   Serial.print(",");
@@ -102,11 +102,10 @@ void printGameState() {
   Serial.print("[ ");
   Serial.print(playerBIsEngaged);
   Serial.print(", ");
-  Serial.print(gy2y);
-  Serial.print(", ");
   Serial.print(gy2z);
+  Serial.print(", ");
+  Serial.print(gy2y);
   Serial.print(" ]");
-
   Serial.print(",");
 
   // PlayerC
@@ -114,9 +113,9 @@ void printGameState() {
   Serial.print("[ ");
   Serial.print(playerCIsEngaged);
   Serial.print(", ");
-  Serial.print(gy3y);
-  Serial.print(", ");
   Serial.print(gy3z);
+  Serial.print(", ");
+  Serial.print(gy3y);
   Serial.print(" ]");
 
   Serial.println(']');

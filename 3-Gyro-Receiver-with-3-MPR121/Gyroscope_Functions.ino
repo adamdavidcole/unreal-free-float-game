@@ -1,20 +1,35 @@
-float GYRO_RANGE = 90.0;
-float SMOOTH_VALUE_FACTOR = 0.2;
+float GYRO_RANGE_MIN_Z = -45.0;
+float GYRO_RANGE_MAX_Z = 45.0;
+float GYRO_RANGE_MIN_Y = -30;
+float GYRO_RANGE_MAX_Y = 60;
+
+float SMOOTH_VALUE_FACTOR = 0.5;
+float IGNORE_VALUES_RANGE = 0.15;
 
 String inDataString;
-
 
 // UTILITIES
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
 
-float mapGyro(float val) {
-  return mapfloat(val, -GYRO_RANGE, GYRO_RANGE, -1.0, 1.0);
+float mapGyroY(float val) {
+  if (val >= 0) {
+    return mapfloat(val, 0, GYRO_RANGE_MAX_Y, 0, 1.0);
+  }
+
+  return mapfloat(val, GYRO_RANGE_MIN_Y, 0, -1.0, 0.0);
+}
+
+float mapGyroZ(float val) {
+  return mapfloat(val, GYRO_RANGE_MIN_Z, GYRO_RANGE_MAX_Z, -1.0, 1.0);
 }
 
 float getSmoothedValue(float value, float target) {
-  return value + (target - value) * SMOOTH_VALUE_FACTOR;
+  if (abs(target) < IGNORE_VALUES_RANGE) target = 0;
+  float smoothed = value + (target - value) * SMOOTH_VALUE_FACTOR;
+  
+  return constrain(smoothed, -1.0, 1.0);
 }
 //gy1yTarget=event.orientation.y;
 // gy1zTarget=event.orientation.z;
@@ -50,8 +65,8 @@ void readGyro1Data() {
  sensors_event_t event; 
  bno.getEvent(&event);
 
- float mappedEventY = mapGyro(event.orientation.y);
- float mappedEventZ = mapGyro(event.orientation.z);
+ float mappedEventY = mapGyroY(event.orientation.y);
+ float mappedEventZ = mapGyroZ(event.orientation.z);
 
  gy1y = getSmoothedValue(gy1y, mappedEventY);
  gy1z = getSmoothedValue(gy1z, mappedEventZ);
@@ -61,8 +76,8 @@ void readGyro2Data(){
  sensors_event_t event2; 
  bno2.getEvent(&event2);
  
- float mappedEventY = mapGyro(event2.orientation.y);
- float mappedEventZ = mapGyro(event2.orientation.z);
+ float mappedEventY = mapGyroY(event2.orientation.y);
+ float mappedEventZ = mapGyroZ(event2.orientation.z);
 
  gy2y = getSmoothedValue(gy2y, mappedEventY);
  gy2z = getSmoothedValue(gy2z, mappedEventZ);
@@ -87,7 +102,9 @@ void readGyro3Data() {
     }
 
     String cleanDataString = outputString.substring(1, outputString.length() - 3);
-    gyro3Readings = cleanDataString;
+    if (cleanDataString.length()) {
+          gyro3Readings = cleanDataString;
+    }
 
     getGyro3Values();
 }
@@ -97,10 +114,11 @@ void getGyro3Values(){
    int firstCommaIndex = gyro3Readings.indexOf(',');
    String firstValue = gyro3Readings.substring(0,firstCommaIndex);
    String secondValue = gyro3Readings.substring(firstCommaIndex+1);
-    
-   float mappedEventY = mapGyro(firstValue.toFloat());
-   float mappedEventZ = mapGyro(secondValue.toFloat());
 
-   gy3y = getSmoothedValue(gy3y, mappedEventY);
+   // NOTE: these are being sent backwards, but thats ok for now
+   float mappedEventZ = mapGyroZ(firstValue.toFloat());
+   float mappedEventY= mapGyroY(secondValue.toFloat());
+
+   gy3y = getSmoothedValue(gy3y, mappedEventY) * -1.0;
    gy3z = getSmoothedValue(gy3z, mappedEventZ);
  }
