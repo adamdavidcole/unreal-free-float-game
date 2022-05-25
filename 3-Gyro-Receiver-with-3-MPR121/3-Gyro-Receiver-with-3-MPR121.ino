@@ -11,6 +11,25 @@
 #define _BV(bit) (1 << (bit)) 
 #endif
 
+/* ******* ******** ******** 
+ *  CONTROL VALUES FOR DEBUGGING
+ ******** ******** ******** */
+ 
+boolean isCapActive1 = true; // prod: true
+boolean isCapActive2 = true; // prod: true
+boolean isCapActive3 = true; // prod: true
+boolean forceCapTouched1 = false;  // prod: false
+boolean forceCapTouched2 = false; // prod: false
+boolean forceCapTouched3 = false; // prod: false
+
+boolean isBnoActive1 = true;  // prod: true
+boolean isBnoActive2 = true; // prod: true
+boolean isBnoActive3 = true; // prod: true
+
+/* ******* ******** ******** 
+ *  END CONTROL VALUES FOR DEBUGGING
+ ******** ******** ******** */
+
 //We will have 3 MPR121 capacitive sensors attached, on
 //different addresses, as explained in their initializer function
 Adafruit_MPR121 cap1 = Adafruit_MPR121();
@@ -22,7 +41,6 @@ Adafruit_MPR121 cap3 = Adafruit_MPR121();
 //one sensor of them has ADR connected to 3 volts to change the default address
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 Adafruit_BNO055 bno2 = Adafruit_BNO055(55, 0x29);
-
 
 //for Hardware Serial Communication:
 //Leonardo Board One Pin0 is connected to Leonardo Board Two Pin 1

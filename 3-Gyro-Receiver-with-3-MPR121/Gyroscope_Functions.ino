@@ -37,13 +37,13 @@ float getSmoothedValue(float value, float target) {
 // gy2y=gy2y+(gy2Target-gy2y)*0.2;
 
 void initializeGyros(){
-  if(!bno.begin())
+  if(isBnoActive1 && !bno.begin())
   {
     /* There was a problem detecting the BNO055 ... check your connections */
     Serial.print("Ooops, no first BNO055 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
-   if(!bno2.begin())
+   if(isBnoActive2 && !bno2.begin())
   {
     /* There was a problem detecting the BNO055 ... check your connections */
     Serial.print("Ooops, no second BNO055 detected ... Check your wiring or I2C ADDR!");
@@ -56,12 +56,14 @@ void initializeGyros(){
  //initialize incoming data array for Gryo3 attached on Arduino board2
   for (dataLength = 0; dataLength < 10; dataLength++) {
     inData[dataLength]=',';
-    }
+   }
    Serial.println("bnos found");
   }
 
 
 void readGyro1Data() {
+ if (!isBnoActive1) return;
+ 
  sensors_event_t event; 
  bno.getEvent(&event);
 
@@ -73,6 +75,8 @@ void readGyro1Data() {
 }
 
 void readGyro2Data(){
+ if (!isBnoActive2) return;
+  
  sensors_event_t event2; 
  bno2.getEvent(&event2);
  
@@ -84,6 +88,8 @@ void readGyro2Data(){
 }
 
 void readGyro3Data() {
+  if (!isBnoActive3) return;
+  
   String readInValues = "a";
   String outputString = "";
 

@@ -1,13 +1,17 @@
+uint16_t DEFAULT_CAP_ON_VAL = 111111111111;
+uint16_t DEFAULT_CAP_OFF_VAL = 0;
+
+
 void initializeMPRs(){
-  if (!cap1.begin(0x5A)) {
+  if (isCapActive1 && !cap1.begin(0x5A)) {
     Serial.println("MPR121 cap1 not found, check wiring?");
     while (1);
   }
-  if (!cap2.begin(0x5C)) {
+  if (isCapActive2 && !cap2.begin(0x5C)) {
     Serial.println("MPR121 cap2 not found, check wiring?");
     while (1);
   }
-  if (!cap3.begin(0x5D)) {
+  if (isCapActive3 && !cap3.begin(0x5D)) {
     Serial.println("MPR121 cap3 not found, check wiring?");
     while (1);
   }
@@ -20,14 +24,34 @@ void resetArray(byte arrayinput[12]){
     }
  }
 
+
+uint16_t getCapTouched1() {
+  if (!isCapActive1) return forceCapTouched1 ? DEFAULT_CAP_ON_VAL : DEFAULT_CAP_OFF_VAL;
+  
+  return cap1.touched();
+}
+
+uint16_t getCapTouched2() {
+  if (!isCapActive2) return forceCapTouched2 ? DEFAULT_CAP_ON_VAL : DEFAULT_CAP_OFF_VAL;
+  
+  return cap2.touched();
+  
+}
+
+uint16_t getCapTouched3() {
+  if (!isCapActive3) return forceCapTouched3 ? DEFAULT_CAP_ON_VAL : DEFAULT_CAP_OFF_VAL;
+  
+  return cap3.touched();
+}
+
 void readMPRs(){
   // getting our MPR121 sensor readings, these return a
   //number between 0 and 2^12
-  currtouched1 = cap1.touched();
+  currtouched1 = getCapTouched1();
   delay(3);
-  currtouched2 = cap2.touched();
+  currtouched2 = getCapTouched2();
   delay(3);
-  currtouched3 = cap3.touched();
+  currtouched3 = getCapTouched3();
   delay(3);
 
    //store our readings as a binary array to make it easy to
