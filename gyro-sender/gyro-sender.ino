@@ -41,6 +41,7 @@ void loop() {
 
  Serial1.print("b");
  Serial1.print(gy1z);
+ Serial1.print(",");
  Serial1.print(gy1y);
  Serial1.println("n");
  delay(50);

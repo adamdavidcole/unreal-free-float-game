@@ -37,6 +37,8 @@ float getSmoothedValue(float value, float target) {
 // gy2y=gy2y+(gy2Target-gy2y)*0.2;
 
 void initializeGyros(){
+  Serial.println("initializeGyros start");
+  
   if(isBnoActive1 && !bno.begin())
   {
     /* There was a problem detecting the BNO055 ... check your connections */
@@ -57,8 +59,9 @@ void initializeGyros(){
   for (dataLength = 0; dataLength < 10; dataLength++) {
     inData[dataLength]=',';
    }
-   Serial.println("bnos found");
-  }
+ 
+   Serial.println("initializeGyros complete: bnos found");
+}
 
 
 void readGyro1Data() {

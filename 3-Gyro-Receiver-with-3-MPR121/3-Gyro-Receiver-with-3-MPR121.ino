@@ -17,7 +17,7 @@
  
 boolean isCapActive1 = true; // prod: true
 boolean isCapActive2 = true; // prod: true
-boolean isCapActive3 = true; // prod: true
+boolean isCapActive3 = false; // prod: true
 boolean forceCapTouched1 = false;  // prod: false
 boolean forceCapTouched2 = false; // prod: false
 boolean forceCapTouched3 = false; // prod: false
@@ -97,6 +97,8 @@ void setup() {
 
   // initializing MPR121 capacitive sensors
   initializeMPRs();
+
+  Serial.println("Initialization Done");
 
 }
 
