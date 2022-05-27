@@ -1,10 +1,10 @@
-float GYRO_RANGE_MIN_Z = -45.0;
-float GYRO_RANGE_MAX_Z = 45.0;
-float GYRO_RANGE_MIN_Y = -30;
-float GYRO_RANGE_MAX_Y = 60;
+float GYRO_RANGE_MIN_Z = -30.0;
+float GYRO_RANGE_MAX_Z = 30.0;
+float GYRO_RANGE_MIN_Y = -15;
+float GYRO_RANGE_MAX_Y = 30;
 
 float SMOOTH_VALUE_FACTOR = 0.5;
-float IGNORE_VALUES_RANGE = 0.15;
+float IGNORE_VALUES_RANGE = 0.20;
 
 String inDataString;
 
@@ -70,7 +70,7 @@ void readGyro1Data() {
  float mappedEventY = mapGyroY(event.orientation.y);
  float mappedEventZ = mapGyroZ(event.orientation.z);
 
- gy1y = getSmoothedValue(gy1y, mappedEventY);
+ gy1y = getSmoothedValue(gy1y, mappedEventY) * -1.0;
  gy1z = getSmoothedValue(gy1z, mappedEventZ);
 }
 
@@ -83,7 +83,7 @@ void readGyro2Data(){
  float mappedEventY = mapGyroY(event2.orientation.y);
  float mappedEventZ = mapGyroZ(event2.orientation.z);
 
- gy2y = getSmoothedValue(gy2y, mappedEventY);
+ gy2y = getSmoothedValue(gy2y, mappedEventY) * -1.0;
  gy2z = getSmoothedValue(gy2z, mappedEventZ);
 }
 
