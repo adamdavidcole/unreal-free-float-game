@@ -4,12 +4,14 @@
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
 
-//include libraries for MPR121
+//include libraries for MPR121`
 #include <Wire.h>
 #include "Adafruit_MPR121.h"
 #ifndef _BV
 #define _BV(bit) (1 << (bit)) 
 #endif
+
+#include "LED.h"
 
 /* ******* ******** ******** 
  *  CONTROL VALUES FOR DEBUGGING
@@ -17,7 +19,7 @@
  
 boolean isCapActive1 = true; // prod: true
 boolean isCapActive2 = true; // prod: true
-boolean isCapActive3 = false; // prod: true
+boolean isCapActive3 = true; // prod: true
 boolean forceCapTouched1 = false;  // prod: false
 boolean forceCapTouched2 = false; // prod: false
 boolean forceCapTouched3 = false; // prod: false
@@ -36,7 +38,6 @@ Adafruit_MPR121 cap1 = Adafruit_MPR121();
 Adafruit_MPR121 cap2 = Adafruit_MPR121();
 Adafruit_MPR121 cap3 = Adafruit_MPR121();
 
-
 //Two BNO gyroscopes communicating through I2C
 //one sensor of them has ADR connected to 3 volts to change the default address
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
@@ -49,7 +50,6 @@ char inChar;
 char inData[10];
 int dataLength = 0;
 String gyro3Readings = "0000,0000,";
-
 
 //for gyroscope info
 float gy1y=0;
@@ -80,6 +80,27 @@ byte checkpoint2 = 0;
 byte checkpoint3 = 0;
 const uint8_t threshold=2;
 
+// How many NeoPixels are attached to the Arduino?
+#define NUMPIXELS 14 // Popular NeoPixel ring size
+
+// When setting up the NeoPixel library, we tell it how many pixels,
+// and which pin to use to send signals. Note that for older NeoPixel
+// strips you might need to change the third parameter -- see the
+// strandtest example for more information on possible values.
+int LEDS_PLAYER_1_RIGHT = 6;
+int LEDS_PLAYER_1_LEFT = 7;
+int LEDS_PLAYER_2_RIGHT = 8;
+int LEDS_PLAYER_2_LEFT = 9;
+int LEDS_PLAYER_3_RIGHT = 10;
+int LEDS_PLAYER_3_LEFT = 11 ;
+
+LED LEDsPlayers1Right(NUMPIXELS, LEDS_PLAYER_1_RIGHT);
+LED LEDsPlayers1Left( NUMPIXELS, LEDS_PLAYER_1_LEFT);
+LED LEDsPlayers2Right(NUMPIXELS, LEDS_PLAYER_2_RIGHT);
+LED LEDsPlayers2Left( NUMPIXELS, LEDS_PLAYER_2_LEFT);
+LED LEDsPlayers3Right(NUMPIXELS, LEDS_PLAYER_3_RIGHT);
+LED LEDsPlayers3Left( NUMPIXELS, LEDS_PLAYER_3_LEFT);
+
 void setup() {
   // start Serial to write to computer, Serial1 to listen to the sender board
   Serial.begin(9600);
@@ -98,8 +119,11 @@ void setup() {
   // initializing MPR121 capacitive sensors
   initializeMPRs();
 
+  // initializing LEDs
+  clearAllPlayerLEDs();
+  
+  
   Serial.println("Initialization Done");
-
 }
 
 void printGameState() {
@@ -142,7 +166,7 @@ void printGameState() {
 }
 
 void loop() {
-  //Serial.println("looping");
+//  Serial.println("looping");
 
   //get all three gyro data
   readGyro3Data();
@@ -172,30 +196,13 @@ void loop() {
     } else {checkpoint2=1;}
   if(cap3active<0.2){
     checkpoint3=0;
-    } else {checkpoint3=1;}
-
-//  Serial.print("GYRO1: ");
-//  Serial.print(gy1y);
-//  Serial.print(",");
-//  Serial.print(gy1z);
-//  Serial.print("   GYRO2: ");
-//  Serial.print(gy2y);
-//  Serial.print(",");
-//  Serial.print(gy2z);
-//  Serial.print("   GYRO3: ");
-//  Serial.print(gy3y);
-//  Serial.print(",");
-//  Serial.print(gy3z);
-//  Serial.println("");
-//  
-//  Serial.print("is cap1 activated?");
-//  Serial.println(checkpoint1);
-//  Serial.print("is cap2 activated?");
-//  Serial.println(checkpoint2);
-//  Serial.print("is cap3 activated?");
-//  Serial.println(checkpoint3);
+  } else {checkpoint3=1;}
 
   printGameState();
-    
+
+  setLEDsPlayer1(255, 0, 0);
+  setLEDsPlayer2(0, 255, 0);
+  setLEDsPlayer3(0, 0, 255);
+
   delay(50);
 }

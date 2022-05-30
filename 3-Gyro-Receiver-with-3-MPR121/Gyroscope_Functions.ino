@@ -45,6 +45,7 @@ void initializeGyros(){
     Serial.print("Ooops, no first BNO055 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
+  
    if(isBnoActive2 && !bno2.begin())
   {
     /* There was a problem detecting the BNO055 ... check your connections */
@@ -52,8 +53,8 @@ void initializeGyros(){
     while(1);
   }
 
-  bno.setExtCrystalUse(true);
-  bno2.setExtCrystalUse(true);
+  if (isBnoActive1) bno.setExtCrystalUse(true);
+  if (isBnoActive2) bno2.setExtCrystalUse(true);
 
  //initialize incoming data array for Gryo3 attached on Arduino board2
   for (dataLength = 0; dataLength < 10; dataLength++) {

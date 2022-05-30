@@ -3,6 +3,8 @@ uint16_t DEFAULT_CAP_OFF_VAL = 0;
 
 
 void initializeMPRs(){
+  Serial.println("Begin initializeMPRs");
+  
   if (isCapActive1 && !cap1.begin(0x5A)) {
     Serial.println("MPR121 cap1 not found, check wiring?");
     while (1);
@@ -15,6 +17,7 @@ void initializeMPRs(){
     Serial.println("MPR121 cap3 not found, check wiring?");
     while (1);
   }
+  
   Serial.println("MPR121s found!");
 }
 
