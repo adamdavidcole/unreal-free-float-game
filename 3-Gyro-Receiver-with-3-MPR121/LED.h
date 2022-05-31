@@ -19,6 +19,7 @@ class LED {
     LED(int numpixels, int pin);
     uint32_t color(int r, int g, int b);
     void setPixelsColor(uint32_t color);
+    void setStandbyLights();
 };
 
 #endif

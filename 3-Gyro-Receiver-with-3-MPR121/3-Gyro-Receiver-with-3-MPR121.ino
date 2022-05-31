@@ -18,19 +18,22 @@
  ******** ******** ******** */
  
 boolean isCapActive1 = true; // prod: true
-boolean isCapActive2 = true; // prod: true
-boolean isCapActive3 = true; // prod: true
+boolean isCapActive2 = false; // prod: true
+boolean isCapActive3 = false; // prod: true
 boolean forceCapTouched1 = false;  // prod: false
 boolean forceCapTouched2 = false; // prod: false
 boolean forceCapTouched3 = false; // prod: false
 
-boolean isBnoActive1 = true;  // prod: true
-boolean isBnoActive2 = true; // prod: true
-boolean isBnoActive3 = true; // prod: true
+boolean isBnoActive1 = false;  // prod: true
+boolean isBnoActive2 = false; // prod: true
+boolean isBnoActive3 = false; // prod: true
 
 /* ******* ******** ******** 
  *  END CONTROL VALUES FOR DEBUGGING
  ******** ******** ******** */
+
+unsigned long timeOfLastStateUpdate = millis();
+unsigned long timeToUpdateState = 50; 
 
 //We will have 3 MPR121 capacitive sensors attached, on
 //different addresses, as explained in their initializer function
@@ -101,6 +104,11 @@ LED LEDsPlayers2Left( NUMPIXELS, LEDS_PLAYER_2_LEFT);
 LED LEDsPlayers3Right(NUMPIXELS, LEDS_PLAYER_3_RIGHT);
 LED LEDsPlayers3Left( NUMPIXELS, LEDS_PLAYER_3_LEFT);
 
+unsigned long disconnectFeedbackDuration = 3000;
+unsigned long timeOfLastDisconnectPlayer1 = 0;
+unsigned long timeOfLastDisconnectPlayer2 = 0;
+unsigned long timeOfLastDisconnectPlayer3 = 0;
+
 void setup() {
   // start Serial to write to computer, Serial1 to listen to the sender board
   Serial.begin(9600);
@@ -165,44 +173,98 @@ void printGameState() {
   Serial.println(']');
 }
 
-void loop() {
-//  Serial.println("looping");
+boolean isWithinTimeOfLastDisconnectFeedback(unsigned long timeOfLastDisconnect) {
+  unsigned long timeSinceLastDisconnect = millis() - timeOfLastDisconnect;
+   return timeSinceLastDisconnect < disconnectFeedbackDuration;
+}
 
-  //get all three gyro data
+boolean shouldPrintStateUpdate() {
+   unsigned long timeSinceLastStateUpdate = millis() - timeOfLastStateUpdate;
+   return timeSinceLastStateUpdate > timeToUpdateState;
+}
+
+void updateGyroState() {
   readGyro3Data();
   readGyro1Data();
   readGyro2Data();
+}
 
-  //reset our cap sensor values
-  resetArray(cap1values);
-  resetArray(cap2values);
-  resetArray(cap3values);
-  cap1count = 0;
-  cap2count = 0;
-  cap3count = 0;
+void updateCapTouchState() {
+    //reset our cap sensor values
+    resetArray(cap1values);
+    resetArray(cap2values);
+    resetArray(cap3values);
+    cap1count = 0;
+    cap2count = 0;
+    cap3count = 0;
+  
+    //get all three MPR121 readings
+    readMPRs();
+    cap1active=checkActivation(cap1count, cap1target, cap1active, threshold);
+    cap2active=checkActivation(cap2count, cap2target, cap2active, threshold);
+    cap3active=checkActivation(cap3count, cap3target, cap3active, threshold);
+  
+    //check if stations are "activated" as defined by our threshold
+    if(cap1active<0.2){
+      // player 1 disconnected
+      if (checkpoint1 == 1) {
+        timeOfLastDisconnectPlayer1 = millis();
+      }
+      
+      checkpoint1=0;
+    } else {
+      checkpoint1=1;
+    }
+    
+    if(cap2active<0.2){
+      // player 2 disconnected
+      if (checkpoint2 == 1) {
+        timeOfLastDisconnectPlayer2 = millis();
+      }
+      checkpoint2=0;
+    } else {
+      checkpoint2=1;
+    }
+    
+    if(cap3active<0.2){
+      if (checkpoint3 == 1) {
+        timeOfLastDisconnectPlayer3 = millis();
+      }
+      checkpoint3=0;
+    } else {
+      checkpoint3=1;
+    }
+}
 
-  //get all three MPR121 readings
-  readMPRs();
-  cap1active=checkActivation(cap1count, cap1target, cap1active, threshold);
-  cap2active=checkActivation(cap2count, cap2target, cap2active, threshold);
-  cap3active=checkActivation(cap3count, cap3target, cap3active, threshold);
+void loop() {
+//  Serial.println("looping");
 
-  //check if stations are "activated" as defined by our threshold
-  if(cap1active<0.2){
-    checkpoint1=0;
-    } else {checkpoint1=1;}
-  if(cap2active<0.2){
-    checkpoint2=0;
-    } else {checkpoint2=1;}
-  if(cap3active<0.2){
-    checkpoint3=0;
-  } else {checkpoint3=1;}
+  updateCapTouchState();
 
-  printGameState();
+  if (shouldPrintStateUpdate()) {
+    timeOfLastStateUpdate = millis();
+    
+    // get all three gyro data
+    updateGyroState();
+      
+    printGameState();
+  }
 
-  setLEDsPlayer1(255, 0, 0);
-  setLEDsPlayer2(0, 255, 0);
-  setLEDsPlayer3(0, 0, 255);
+  if (checkpoint1 != 1 && isWithinTimeOfLastDisconnectFeedback(timeOfLastDisconnectPlayer1)) {
+    setLEDsPlayer1(255, 0, 0);
+  } else if (checkpoint1 == 1) {
+    setLEDsPlayer1(0, 0, 255);
+  } else {
+    setPlayer1LEDsToStandby();
+  }
 
-  delay(50);
+  if (checkpoint2 != 1 && isWithinTimeOfLastDisconnectFeedback(timeOfLastDisconnectPlayer2)) {
+    setLEDsPlayer2(255, 0, 0);
+  } else if (checkpoint2 == 1) {
+    setLEDsPlayer2(0, 0, 255);
+  } else {
+    setLEDsPlayer2(100, 100, 0);
+  }
+
+  delay(10);
 }

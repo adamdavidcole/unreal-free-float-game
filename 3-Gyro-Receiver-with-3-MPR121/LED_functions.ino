@@ -3,6 +3,11 @@ void setLEDsPlayer1(int r, int g, int b) {
   LEDsPlayers1Left.setPixelsColor(LEDsPlayers1Left.color(r, g, b));
 }
 
+void setPlayer1LEDsToStandby() {
+  LEDsPlayers1Right.setStandbyLights();
+  LEDsPlayers1Left.setStandbyLights();
+}
+
 void setLEDsPlayer2(int r, int g, int b) {
   LEDsPlayers2Right.setPixelsColor(LEDsPlayers2Right.color(r, g, b));
   LEDsPlayers2Left.setPixelsColor(LEDsPlayers2Left.color(r, g, b));

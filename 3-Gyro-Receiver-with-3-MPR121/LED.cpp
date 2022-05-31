@@ -29,3 +29,15 @@ void LED::setPixelsColor(uint32_t color) {
 
   pixels.show();   // Send the updated pixel colors to the hardware.
 }
+
+void LED::setStandbyLights() {
+  int baseColor = 100;
+  int blinkFactor = 50;
+  int variation = sin(millis()/1000.0) * blinkFactor;
+
+  int nextColor = baseColor + variation;
+
+//  Serial.println(nextColor);
+  
+  setPixelsColor(color(nextColor,nextColor,nextColor));
+}
