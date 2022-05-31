@@ -183,6 +183,8 @@ void printGameState() {
   Serial.print(gy1z);
   Serial.print(", ");
   Serial.print(gy1y);
+  Serial.print(", ");
+  Serial.print(playerState1);
   Serial.print(" ]");
   
   Serial.print(",");
@@ -195,7 +197,10 @@ void printGameState() {
   Serial.print(gy2z);
   Serial.print(", ");
   Serial.print(gy2y);
+  Serial.print(", ");
+  Serial.print(playerState2);
   Serial.print(" ]");
+  
   Serial.print(",");
 
   // PlayerC
@@ -206,6 +211,8 @@ void printGameState() {
   Serial.print(gy3z);
   Serial.print(", ");
   Serial.print(gy3y);
+  Serial.print(", ");
+  Serial.print(playerState3);
   Serial.print(" ]");
 
   Serial.println(']');
@@ -425,8 +432,6 @@ void loop() {
 
   updatePlayerStates();
   updateLEDs();
-
-  Serial.println(getPlayerStateAsString(playerState1));
-
+  
 //  delay(10);
 }

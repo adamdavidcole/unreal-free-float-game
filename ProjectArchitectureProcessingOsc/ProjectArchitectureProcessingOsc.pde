@@ -66,14 +66,17 @@ void draw()
         boolean playerAIsEnaged = playerA.getInt(0) == 1;
         float playerAInput0 =  playerA.getFloat(1);
         float playerAInput1 =  playerA.getFloat(2);
+        int playerAState = playerA.getInt(3);
         
         boolean playerBIsEnaged = playerB.getInt(0) == 1;
         float playerBInput0 =  playerB.getFloat(1);
         float playerBInput1 =  playerB.getFloat(2);
+        int playerBState = playerB.getInt(3);
         
         boolean playerCIsEnaged = playerC.getInt(0) == 1;
         float playerCInput0 =  playerC.getFloat(1);
         float playerCInput1 =  playerC.getFloat(2);
+        int playerCState = playerC.getInt(3);
         
         OscMessage myMessage = new OscMessage("/test/");
       
@@ -88,6 +91,10 @@ void draw()
         myMessage.add(playerCIsEnaged);
         myMessage.add(playerCInput0);
         myMessage.add(playerCInput1);
+                
+        myMessage.add(playerAState); 
+        myMessage.add(playerBState); 
+        myMessage.add(playerCState);
                 
         oscP5.send(myMessage, myRemoteLocation); 
       }
