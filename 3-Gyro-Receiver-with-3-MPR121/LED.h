@@ -20,6 +20,7 @@ class LED {
     uint32_t color(int r, int g, int b);
     void setPixelsColor(uint32_t color);
     void setStandbyLights();
+    void setPreActive(int touchPointsCount, uint8_t capThreshold);
     void setActive(int touchPointsCount);
     void setDisconnected(unsigned long timeOfLastDisconnect);
 };

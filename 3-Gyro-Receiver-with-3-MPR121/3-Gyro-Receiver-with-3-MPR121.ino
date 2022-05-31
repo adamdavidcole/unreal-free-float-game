@@ -339,40 +339,72 @@ void updateCapTouchState() {
     }
 }
 
+void updatePlayerStates() {
+  // PLAYER 1
+  if (shouldDisplayDisconnectFeedbackPlayer1()) {
+     playerState1 = DISCONNECTED;
+  } else if (checkpoint1 == 1 && isFullyActivated(timeofLastActivationPlayer1)) {
+     playerState1 = ACTIVE;
+  } else if (cap1count > 0) {
+     playerState1 = PREACTIVE;
+  } else {
+     playerState1 = STANDBY;
+  }
+
+  // PLAYER 2
+  if (shouldDisplayDisconnectFeedbackPlayer2()) {
+     playerState2 = DISCONNECTED;
+  } else if (checkpoint2 == 1 && isFullyActivated(timeofLastActivationPlayer2)) {
+     playerState2 = ACTIVE;
+  } else if (cap2count > 0) {
+     playerState2 = PREACTIVE;
+  } else {
+     playerState2 = STANDBY;
+  }
+
+  // PLAYER 3
+  if (shouldDisplayDisconnectFeedbackPlayer3()) {
+     playerState3 = DISCONNECTED;
+  } else if (checkpoint3 == 1 && isFullyActivated(timeofLastActivationPlayer3)) {
+     playerState3 = ACTIVE;
+  } else if (cap3count > 0) {
+     playerState3 = PREACTIVE;
+  } else {
+     playerState3 = STANDBY;
+  }
+}
+
 void updateLEDs() {
   // Display DISCONNECTED lights if user was connected for a sufficient amount of time to be considered fully activated and then released a touch point
   // else Display CONNECTED lights if user is fully activated or has fingers on some touch points
   // else Display STANDBY lights
 
-  if (shouldDisplayDisconnectFeedbackPlayer1()) {
-    playerState1 = DISCONNECTED;
+  if (playerState1 == DISCONNECTED) {
     setPlayer1LEDsToDisconnected(timeOfLastDisconnectPlayer1);
-  } else 
-  if (checkpoint1 == 1 || cap1count > 0) {
-    if (checkpoint1 == 1 && isFullyActivated(timeofLastActivationPlayer1)) {
-      playerState1 = ACTIVE;
-    } else {
-      playerState1 = PREACTIVE;
-    }
-    
-    setPlayer1LEDsToActive(cap1count);
+  } else if (playerState1 == ACTIVE) {
+     setPlayer1LEDsToActive(cap1count);
+  } else if (playerState1 == PREACTIVE) {
+     setPlayer1LEDsToPreActive(cap1count, threshold);
   } else {
-    playerState1 = STANDBY;
     setPlayer1LEDsToStandby();
   }
 
-  if (shouldDisplayDisconnectFeedbackPlayer2()) {
+  if (playerState2 == DISCONNECTED) {
     setPlayer2LEDsToDisconnected(timeOfLastDisconnectPlayer2);
-  } else if (checkpoint2 == 1 || cap2count > 0) {
-    setPlayer2LEDsToActive(cap2count);
+  } else if (playerState2 == ACTIVE) {
+    setPlayer2LEDsToActive(cap1count);
+  } else if (playerState2 == PREACTIVE) {
+     setPlayer2LEDsToPreActive(cap2count, threshold);
   } else {
     setPlayer2LEDsToStandby();
   }
 
-  if (shouldDisplayDisconnectFeedbackPlayer3()) {
+   if (playerState3 == DISCONNECTED) {
     setPlayer3LEDsToDisconnected(timeOfLastDisconnectPlayer3);
-  } else if (checkpoint3 == 1 || cap3count > 0) {
-    setPlayer3LEDsToActive(cap3count);
+  } else if (playerState3 == ACTIVE) {
+    setPlayer3LEDsToActive(cap1count);
+  } else if (playerState3 == PREACTIVE) {
+     setPlayer3LEDsToPreActive(cap3count, threshold);
   } else {
     setPlayer3LEDsToStandby();
   }
@@ -391,6 +423,7 @@ void loop() {
     printGameState();
   }
 
+  updatePlayerStates();
   updateLEDs();
 
   Serial.println(getPlayerStateAsString(playerState1));

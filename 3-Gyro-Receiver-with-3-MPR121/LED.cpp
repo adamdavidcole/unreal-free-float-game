@@ -44,21 +44,26 @@ void LED::setStandbyLights() {
   setPixelsColor(color(nextColor,nextColor,nextColor));
 }
 
-void LED::setActive(int touchPointsCount) {
-  touchPointsCount = constrain(touchPointsCount, 0, 4);
-  float touchPointsFactor = float(touchPointsCount)/4.0;
+void LED::setPreActive(int touchPointsCount, uint8_t capThreshold) {
+  touchPointsCount = constrain(touchPointsCount, 0, int(capThreshold) + 1);
+  float touchPointsFactor = float(touchPointsCount)/float(capThreshold + 1);
   
-  int baseBlueColor = 50 + 155 * touchPointsFactor;
+  int baseYellowColor = 50 + 155 * touchPointsFactor;
   int blinkFactor = 0;
-  if (touchPointsCount >= 4) {
-    baseBlueColor = 180;
-    blinkFactor = 75;
-  }
+  int variation = sin(millis()/500.0) * blinkFactor;
+
+  int nextYellowColor = baseYellowColor + variation;
+  
+  setPixelsColor(color(nextYellowColor,nextYellowColor,0));
+}
+
+void LED::setActive(int touchPointsCount) {
+  int baseBlueColor = 180;
+  int blinkFactor = 75;
+
   int variation = sin(millis()/500.0) * blinkFactor;
 
   int nextBlueColor = baseBlueColor + variation;
-
-//  Serial.println(nextColor);
   
   setPixelsColor(color(0,0,nextBlueColor));
 }
