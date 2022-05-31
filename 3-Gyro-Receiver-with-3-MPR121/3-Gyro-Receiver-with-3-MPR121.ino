@@ -81,7 +81,7 @@ byte cap3target = 0;
 byte checkpoint1 = 0;
 byte checkpoint2 = 0;
 byte checkpoint3 = 0;
-const uint8_t threshold=3;
+const uint8_t threshold=2;
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS 14 // Popular NeoPixel ring size
@@ -126,7 +126,13 @@ boolean wasActivatedDuringDisconnectPlayer1 = false;
 boolean wasActivatedDuringDisconnectPlayer2 = false;
 boolean wasActivatedDuringDisconnectPlayer3 = false;
 
+// STATES: ["STANDBY", "PREACTIVE", "ACTIVE", "DISCONNECTED"]
 
+enum PlayerState {STANDBY, PREACTIVE, ACTIVE, DISCONNECTED};
+
+PlayerState playerState1 = STANDBY;
+PlayerState playerState2 = STANDBY;
+PlayerState playerState3 = STANDBY;
 
 void setup() {
   // start Serial to write to computer, Serial1 to listen to the sender board
@@ -134,10 +140,10 @@ void setup() {
   while (!Serial) { // needed to keep leonardo/micro from starting too fast!
     delay(10);
   }
-  Serial1.begin(9600);
-  while (!Serial1) { // needed to keep leonardo/micro from starting too fast!
-    delay(10);
-  }
+//  Serial1.begin(9600);
+//  while (!Serial1) { // needed to keep leonardo/micro from starting too fast!
+//    delay(10);
+//  }
   Serial.println("starting up");
 
   //Initialize the gyroscopes
@@ -151,6 +157,19 @@ void setup() {
   
   
   Serial.println("Initialization Done");
+}
+
+String getPlayerStateAsString(PlayerState playerState) {
+  switch(playerState) {
+    case STANDBY:
+      return "STANDBY";
+    case PREACTIVE:
+      return "PREACTIVE";
+    case ACTIVE:
+      return "ACTIVE";
+    case DISCONNECTED:
+      return "DISCONNECTED";
+  }
 }
 
 void printGameState() {
@@ -326,11 +345,19 @@ void updateLEDs() {
   // else Display STANDBY lights
 
   if (shouldDisplayDisconnectFeedbackPlayer1()) {
+    playerState1 = DISCONNECTED;
     setPlayer1LEDsToDisconnected(timeOfLastDisconnectPlayer1);
   } else 
   if (checkpoint1 == 1 || cap1count > 0) {
+    if (checkpoint1 == 1 && isFullyActivated(timeofLastActivationPlayer1)) {
+      playerState1 = ACTIVE;
+    } else {
+      playerState1 = PREACTIVE;
+    }
+    
     setPlayer1LEDsToActive(cap1count);
   } else {
+    playerState1 = STANDBY;
     setPlayer1LEDsToStandby();
   }
 
@@ -365,6 +392,8 @@ void loop() {
   }
 
   updateLEDs();
+
+  Serial.println(getPlayerStateAsString(playerState1));
 
 //  delay(10);
 }

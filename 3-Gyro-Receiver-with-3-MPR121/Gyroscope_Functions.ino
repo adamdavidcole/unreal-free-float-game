@@ -97,19 +97,19 @@ void readGyro3Data() {
   String readInValues = "a";
   String outputString = "";
 
-   while (Serial1.available()) {
-        char recieved = Serial1.read();
-        inDataString += recieved; 
-
-        // Process message when new line character is recieved
-        if (recieved == '\n')
-        {
-//            Serial.print("Arduino Received: ");
-//            Serial.print(inDataString);
-            outputString = inDataString;
-            inDataString = ""; // Clear recieved buffer
-        }
-    }
+//   while (Serial1.available()) {
+//        char recieved = Serial1.read();
+//        inDataString += recieved; 
+//
+//        // Process message when new line character is recieved
+//        if (recieved == '\n')
+//        {
+////            Serial.print("Arduino Received: ");
+////            Serial.print(inDataString);
+//            outputString = inDataString;
+//            inDataString = ""; // Clear recieved buffer
+//        }
+//    }
 
     String cleanDataString = outputString.substring(1, outputString.length() - 3);
     if (cleanDataString.length()) {
