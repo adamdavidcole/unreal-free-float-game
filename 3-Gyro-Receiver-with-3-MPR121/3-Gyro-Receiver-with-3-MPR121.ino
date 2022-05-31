@@ -81,7 +81,7 @@ byte cap3target = 0;
 byte checkpoint1 = 0;
 byte checkpoint2 = 0;
 byte checkpoint3 = 0;
-const uint8_t threshold=2;
+const uint8_t threshold=3;
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS 14 // Popular NeoPixel ring size
@@ -104,10 +104,29 @@ LED LEDsPlayers2Left( NUMPIXELS, LEDS_PLAYER_2_LEFT);
 LED LEDsPlayers3Right(NUMPIXELS, LEDS_PLAYER_3_RIGHT);
 LED LEDsPlayers3Left( NUMPIXELS, LEDS_PLAYER_3_LEFT);
 
-unsigned long disconnectFeedbackDuration = 3000;
-unsigned long timeOfLastDisconnectPlayer1 = 0;
-unsigned long timeOfLastDisconnectPlayer2 = 0;
-unsigned long timeOfLastDisconnectPlayer3 = 0;
+// Time to display feedback after player disconnects
+unsigned long disconnectFeedbackDuration = 10000;
+unsigned long timeOfLastDisconnectPlayer1 = disconnectFeedbackDuration;
+unsigned long timeOfLastDisconnectPlayer2 = disconnectFeedbackDuration;
+unsigned long timeOfLastDisconnectPlayer3 = disconnectFeedbackDuration;
+
+// Time player needs to be touching all touchpoints to be considered fully activated
+unsigned long preFullActivationDuration = 5000;
+unsigned long timeofLastActivationPlayer1 = 0;
+unsigned long timeofLastActivationPlayer2 = 0;
+unsigned long timeofLastActivationPlayer3 = 0;
+
+// True if player was fully activated before disconnecting from touchpointd
+boolean wasFullyActivatedBeforeDisconnectPlayer1 = false;
+boolean wasFullyActivatedBeforeDisconnectPlayer2 = false;
+boolean wasFullyActivatedBeforeDisconnectPlayer3 = false;
+
+// True if player was reconnected while "disconnect" feedback was active
+boolean wasActivatedDuringDisconnectPlayer1 = false;
+boolean wasActivatedDuringDisconnectPlayer2 = false;
+boolean wasActivatedDuringDisconnectPlayer3 = false;
+
+
 
 void setup() {
   // start Serial to write to computer, Serial1 to listen to the sender board
@@ -175,12 +194,51 @@ void printGameState() {
 
 boolean isWithinTimeOfLastDisconnectFeedback(unsigned long timeOfLastDisconnect) {
   unsigned long timeSinceLastDisconnect = millis() - timeOfLastDisconnect;
-   return timeSinceLastDisconnect < disconnectFeedbackDuration;
+  return timeSinceLastDisconnect < disconnectFeedbackDuration;
+}
+
+boolean isFullyActivated(unsigned long timeOfLastActivation) {
+  unsigned long timeSinceLastActivation = millis() - timeOfLastActivation;
+  return timeSinceLastActivation > preFullActivationDuration;
 }
 
 boolean shouldPrintStateUpdate() {
    unsigned long timeSinceLastStateUpdate = millis() - timeOfLastStateUpdate;
    return timeSinceLastStateUpdate > timeToUpdateState;
+}
+
+boolean shouldDisplayDisconnectFeedbackPlayer1() {
+  return shouldDisplayDisconnectFeedback(
+      checkpoint1,
+      wasFullyActivatedBeforeDisconnectPlayer1,
+      timeOfLastDisconnectPlayer1
+  );
+}
+
+boolean shouldDisplayDisconnectFeedbackPlayer2() {
+  return shouldDisplayDisconnectFeedback(
+      checkpoint2,
+      wasFullyActivatedBeforeDisconnectPlayer2,
+      timeOfLastDisconnectPlayer2
+  );
+}
+
+boolean shouldDisplayDisconnectFeedbackPlayer3() {
+  return shouldDisplayDisconnectFeedback(
+      checkpoint3,
+      wasFullyActivatedBeforeDisconnectPlayer3,
+      timeOfLastDisconnectPlayer3
+  );
+}
+
+boolean shouldDisplayDisconnectFeedback(
+  bool checkpoint, 
+  bool wasFullyActivatedBeforeDisconnect, 
+  unsigned long timeOfLastDisconnect
+) {
+    return checkpoint != 1 && 
+      wasFullyActivatedBeforeDisconnect &&
+      isWithinTimeOfLastDisconnectFeedback(timeOfLastDisconnect);
 }
 
 void updateGyroState() {
@@ -206,34 +264,91 @@ void updateCapTouchState() {
   
     //check if stations are "activated" as defined by our threshold
     if(cap1active<0.2){
-      // player 1 disconnected
       if (checkpoint1 == 1) {
+        // player 1 disconnected
         timeOfLastDisconnectPlayer1 = millis();
+        wasFullyActivatedBeforeDisconnectPlayer1 = isFullyActivated(timeofLastActivationPlayer1);
       }
       
       checkpoint1=0;
     } else {
+      
+      if (checkpoint1 == 0) {
+        // player 1 activated
+        if (!shouldDisplayDisconnectFeedbackPlayer1()) {
+          // only update time of activation if not currently in disconnect phase
+          timeofLastActivationPlayer1 = millis();
+        }
+      }
       checkpoint1=1;
     }
     
     if(cap2active<0.2){
-      // player 2 disconnected
       if (checkpoint2 == 1) {
+        // player 2 disconnected
         timeOfLastDisconnectPlayer2 = millis();
+        wasFullyActivatedBeforeDisconnectPlayer2 = isFullyActivated(timeofLastActivationPlayer2);
       }
       checkpoint2=0;
     } else {
+      if (checkpoint2 == 0) {
+         // player 2 activated
+         if (!shouldDisplayDisconnectFeedbackPlayer2()) {
+            // only update time of activation if not currently in disconnect phase
+            timeofLastActivationPlayer2 = millis();
+         }
+      }
       checkpoint2=1;
     }
     
     if(cap3active<0.2){
       if (checkpoint3 == 1) {
+        // player 3 disconnected
         timeOfLastDisconnectPlayer3 = millis();
+        wasFullyActivatedBeforeDisconnectPlayer3 = isFullyActivated(timeofLastActivationPlayer3);
       }
       checkpoint3=0;
     } else {
+      if (checkpoint3 == 0) {
+         // player 3 activated
+        if (!shouldDisplayDisconnectFeedbackPlayer3()) {
+          // only update time of activation if not currently in disconnect phase
+          timeofLastActivationPlayer3 = millis();
+        }
+      }
       checkpoint3=1;
     }
+}
+
+void updateLEDs() {
+  // Display DISCONNECTED lights if user was connected for a sufficient amount of time to be considered fully activated and then released a touch point
+  // else Display CONNECTED lights if user is fully activated or has fingers on some touch points
+  // else Display STANDBY lights
+
+  if (shouldDisplayDisconnectFeedbackPlayer1()) {
+    setPlayer1LEDsToDisconnected(timeOfLastDisconnectPlayer1);
+  } else 
+  if (checkpoint1 == 1 || cap1count > 0) {
+    setPlayer1LEDsToActive(cap1count);
+  } else {
+    setPlayer1LEDsToStandby();
+  }
+
+  if (shouldDisplayDisconnectFeedbackPlayer2()) {
+    setPlayer2LEDsToDisconnected(timeOfLastDisconnectPlayer2);
+  } else if (checkpoint2 == 1 || cap2count > 0) {
+    setPlayer2LEDsToActive(cap2count);
+  } else {
+    setPlayer2LEDsToStandby();
+  }
+
+  if (shouldDisplayDisconnectFeedbackPlayer3()) {
+    setPlayer3LEDsToDisconnected(timeOfLastDisconnectPlayer3);
+  } else if (checkpoint3 == 1 || cap3count > 0) {
+    setPlayer3LEDsToActive(cap3count);
+  } else {
+    setPlayer3LEDsToStandby();
+  }
 }
 
 void loop() {
@@ -244,27 +359,12 @@ void loop() {
   if (shouldPrintStateUpdate()) {
     timeOfLastStateUpdate = millis();
     
-    // get all three gyro data
     updateGyroState();
       
     printGameState();
   }
 
-  if (checkpoint1 != 1 && isWithinTimeOfLastDisconnectFeedback(timeOfLastDisconnectPlayer1)) {
-    setLEDsPlayer1(255, 0, 0);
-  } else if (checkpoint1 == 1) {
-    setLEDsPlayer1(0, 0, 255);
-  } else {
-    setPlayer1LEDsToStandby();
-  }
+  updateLEDs();
 
-  if (checkpoint2 != 1 && isWithinTimeOfLastDisconnectFeedback(timeOfLastDisconnectPlayer2)) {
-    setLEDsPlayer2(255, 0, 0);
-  } else if (checkpoint2 == 1) {
-    setLEDsPlayer2(0, 0, 255);
-  } else {
-    setLEDsPlayer2(100, 100, 0);
-  }
-
-  delay(10);
+//  delay(10);
 }
