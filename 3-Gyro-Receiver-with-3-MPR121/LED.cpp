@@ -48,13 +48,13 @@ void LED::setPreActive(int touchPointsCount, uint8_t capThreshold) {
   touchPointsCount = constrain(touchPointsCount, 0, int(capThreshold) + 1);
   float touchPointsFactor = float(touchPointsCount)/float(capThreshold + 1);
   
-  int baseYellowColor = 50 + 155 * touchPointsFactor;
+  int baseColor = 50 + 155 * touchPointsFactor;
   int blinkFactor = 0;
   int variation = sin(millis()/500.0) * blinkFactor;
 
-  int nextYellowColor = baseYellowColor + variation;
-  
-  setPixelsColor(color(nextYellowColor,nextYellowColor,0));
+  int nextColor = baseColor + variation;
+
+  setPixelsColor(color(0,nextColor,0));
 }
 
 void LED::setActive(int touchPointsCount) {

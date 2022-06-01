@@ -111,7 +111,7 @@ unsigned long timeOfLastDisconnectPlayer2 = disconnectFeedbackDuration;
 unsigned long timeOfLastDisconnectPlayer3 = disconnectFeedbackDuration;
 
 // Time player needs to be touching all touchpoints to be considered fully activated
-unsigned long preFullActivationDuration = 5000;
+unsigned long preFullActivationDuration = 3000;
 unsigned long timeofLastActivationPlayer1 = 0;
 unsigned long timeofLastActivationPlayer2 = 0;
 unsigned long timeofLastActivationPlayer3 = 0;
