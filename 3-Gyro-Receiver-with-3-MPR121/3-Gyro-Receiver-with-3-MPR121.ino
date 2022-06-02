@@ -18,15 +18,15 @@
  ******** ******** ******** */
  
 boolean isCapActive1 = true; // prod: true
-boolean isCapActive2 = false; // prod: true
-boolean isCapActive3 = false; // prod: true
+boolean isCapActive2 = true; // prod: true
+boolean isCapActive3 = true; // prod: true
 boolean forceCapTouched1 = false;  // prod: false
 boolean forceCapTouched2 = false; // prod: false
 boolean forceCapTouched3 = false; // prod: false
 
-boolean isBnoActive1 = false;  // prod: true
-boolean isBnoActive2 = false; // prod: true
-boolean isBnoActive3 = false; // prod: true
+boolean isBnoActive1 = true;  // prod: true
+boolean isBnoActive2 = true; // prod: true
+boolean isBnoActive3 = true; // prod: true
 
 /* ******* ******** ******** 
  *  END CONTROL VALUES FOR DEBUGGING
@@ -69,9 +69,17 @@ uint16_t currtouched3 = 0;
 byte cap1values[12]= {0};
 byte cap2values[12]= {0};
 byte cap3values[12]= {0};
-uint8_t cap1count = 0;
-uint8_t cap2count = 0;
-uint8_t cap3count = 0;
+
+uint8_t cap1countR = 0;
+uint8_t cap1countL = 0;
+uint8_t cap1countTotal = 0;
+uint8_t cap2countR = 0;
+uint8_t cap2countL = 0;
+uint8_t cap2countTotal = 0;
+uint8_t cap3countR = 0;
+uint8_t cap3countL = 0;
+uint8_t cap3countTotal = 0;
+
 float cap1active = 0;
 float cap2active = 0;
 float cap3active = 0;
@@ -81,7 +89,7 @@ byte cap3target = 0;
 byte checkpoint1 = 0;
 byte checkpoint2 = 0;
 byte checkpoint3 = 0;
-const uint8_t threshold=2;
+const uint8_t threshold=1;
 
 // How many NeoPixels are attached to the Arduino?
 #define NUMPIXELS 14 // Popular NeoPixel ring size
@@ -111,7 +119,7 @@ unsigned long timeOfLastDisconnectPlayer2 = disconnectFeedbackDuration;
 unsigned long timeOfLastDisconnectPlayer3 = disconnectFeedbackDuration;
 
 // Time player needs to be touching all touchpoints to be considered fully activated
-unsigned long preFullActivationDuration = 3000;
+unsigned long preFullActivationDuration = 1000;
 unsigned long timeofLastActivationPlayer1 = 0;
 unsigned long timeofLastActivationPlayer2 = 0;
 unsigned long timeofLastActivationPlayer3 = 0;
@@ -278,16 +286,22 @@ void updateCapTouchState() {
     resetArray(cap1values);
     resetArray(cap2values);
     resetArray(cap3values);
-    cap1count = 0;
-    cap2count = 0;
-    cap3count = 0;
+    cap1countR = 0;
+    cap1countL = 0;
+    cap2countR = 0;
+    cap2countL = 0;
+    cap3countR = 0;
+    cap3countL = 0;
+    cap1countTotal = 0;
+    cap2countTotal = 0;
+    cap3countTotal = 0;
   
     //get all three MPR121 readings
     readMPRs();
-    cap1active=checkActivation(cap1count, cap1target, cap1active, threshold);
-    cap2active=checkActivation(cap2count, cap2target, cap2active, threshold);
-    cap3active=checkActivation(cap3count, cap3target, cap3active, threshold);
-  
+    cap1active=checkActivation(cap1countR, cap1countL, cap1target, cap1active, threshold);
+    cap2active=checkActivation(cap2countR, cap2countL, cap2target, cap2active, threshold);
+    cap3active=checkActivation(cap3countR, cap3countL, cap3target, cap3active, threshold);
+
     //check if stations are "activated" as defined by our threshold
     if(cap1active<0.2){
       if (checkpoint1 == 1) {
@@ -352,7 +366,7 @@ void updatePlayerStates() {
      playerState1 = DISCONNECTED;
   } else if (checkpoint1 == 1 && isFullyActivated(timeofLastActivationPlayer1)) {
      playerState1 = ACTIVE;
-  } else if (cap1count > 0) {
+  } else if (cap1countTotal > 0) {
      playerState1 = PREACTIVE;
   } else {
      playerState1 = STANDBY;
@@ -363,7 +377,7 @@ void updatePlayerStates() {
      playerState2 = DISCONNECTED;
   } else if (checkpoint2 == 1 && isFullyActivated(timeofLastActivationPlayer2)) {
      playerState2 = ACTIVE;
-  } else if (cap2count > 0) {
+  } else if (cap2countTotal > 0) {
      playerState2 = PREACTIVE;
   } else {
      playerState2 = STANDBY;
@@ -374,7 +388,7 @@ void updatePlayerStates() {
      playerState3 = DISCONNECTED;
   } else if (checkpoint3 == 1 && isFullyActivated(timeofLastActivationPlayer3)) {
      playerState3 = ACTIVE;
-  } else if (cap3count > 0) {
+  } else if (cap3countTotal > 0) {
      playerState3 = PREACTIVE;
   } else {
      playerState3 = STANDBY;
@@ -389,9 +403,13 @@ void updateLEDs() {
   if (playerState1 == DISCONNECTED) {
     setPlayer1LEDsToDisconnected(timeOfLastDisconnectPlayer1);
   } else if (playerState1 == ACTIVE) {
-     setPlayer1LEDsToActive(cap1count);
+     setPlayer1LEDsToActive(cap1countTotal);
   } else if (playerState1 == PREACTIVE) {
-     setPlayer1LEDsToPreActive(cap1count, threshold);
+    if (checkpoint1 == 1 && !isFullyActivated(timeofLastActivationPlayer1)) {
+      setPlayer1LEDsToPreActiveBlink();
+    } else {
+      setPlayer1LEDsToPreActive(cap1countR, cap1countL);
+    }
   } else {
     setPlayer1LEDsToStandby();
   }
@@ -399,9 +417,12 @@ void updateLEDs() {
   if (playerState2 == DISCONNECTED) {
     setPlayer2LEDsToDisconnected(timeOfLastDisconnectPlayer2);
   } else if (playerState2 == ACTIVE) {
-    setPlayer2LEDsToActive(cap1count);
+    setPlayer2LEDsToActive(cap2countR);
   } else if (playerState2 == PREACTIVE) {
-     setPlayer2LEDsToPreActive(cap2count, threshold);
+    if (checkpoint2 == 1 && !isFullyActivated(timeofLastActivationPlayer2)) {
+      setPlayer2LEDsToPreActiveBlink();
+    }
+     setPlayer2LEDsToPreActive(cap2countR, cap2countL);
   } else {
     setPlayer2LEDsToStandby();
   }
@@ -409,9 +430,12 @@ void updateLEDs() {
    if (playerState3 == DISCONNECTED) {
     setPlayer3LEDsToDisconnected(timeOfLastDisconnectPlayer3);
   } else if (playerState3 == ACTIVE) {
-    setPlayer3LEDsToActive(cap1count);
+    setPlayer3LEDsToActive(cap3countR);
   } else if (playerState3 == PREACTIVE) {
-     setPlayer3LEDsToPreActive(cap3count, threshold);
+    if (checkpoint3 == 1 && !isFullyActivated(timeofLastActivationPlayer3)) {
+      setPlayer3LEDsToPreActiveBlink();
+    }
+     setPlayer3LEDsToPreActive(cap3countR, cap3countL);
   } else {
     setPlayer3LEDsToStandby();
   }

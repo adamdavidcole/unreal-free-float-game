@@ -17,19 +17,27 @@ void setLEDsPlayer3(int r, int g, int b) {
 
 
 // Set to PREACTIVE
-void setPlayer1LEDsToPreActive(int touchPointsCount, uint8_t capThreshold) {
-  LEDsPlayers1Right.setPreActive(touchPointsCount, capThreshold);
-  LEDsPlayers1Left.setPreActive(touchPointsCount, capThreshold);
+void setPlayer1LEDsToPreActive(int touchPointsRight, int touchPointsLeft) {
+  LEDsPlayers1Right.setPreActive(touchPointsRight);
+  LEDsPlayers1Left.setPreActive(touchPointsLeft);
+}
+void setPlayer1LEDsToPreActiveBlink() {
+  LEDsPlayers1Right.setPreActiveBlink();
+  LEDsPlayers1Left.setPreActiveBlink();
 }
 
-void setPlayer2LEDsToPreActive(int touchPointsCount, uint8_t capThreshold) {
-  LEDsPlayers2Right.setPreActive(touchPointsCount, capThreshold);
-  LEDsPlayers2Left.setPreActive(touchPointsCount, capThreshold);
+void setPlayer2LEDsToPreActive(int touchPointsRight, int touchPointsLeft) {
+  LEDsPlayers2Right.setPreActive(touchPointsRight);
+  LEDsPlayers2Left.setPreActive(touchPointsLeft);
+}
+void setPlayer2LEDsToPreActiveBlink() {
+  LEDsPlayers2Right.setPreActiveBlink();
+  LEDsPlayers2Left.setPreActiveBlink();
 }
 
-void setPlayer3LEDsToPreActive(int touchPointsCount, uint8_t capThreshold) {
-  LEDsPlayers3Right.setPreActive(touchPointsCount, capThreshold);
-  LEDsPlayers3Left.setPreActive(touchPointsCount, capThreshold);
+void setPlayer3LEDsToPreActive(int touchPointsRight, int touchPointsLeft) {
+  LEDsPlayers3Right.setPreActive(touchPointsRight);
+  LEDsPlayers3Left.setPreActive(touchPointsLeft);
 }
 
 // Set to ACTIVE pulse
@@ -44,10 +52,14 @@ void setPlayer2LEDsToActive(int touchPointsCount) {
   LEDsPlayers2Left.setActive(touchPointsCount);
 }
 
-// Set to active pulse
+// Set to preactive pulse
 void setPlayer3LEDsToActive(int touchPointsCount) {
   LEDsPlayers3Right.setActive(touchPointsCount);
   LEDsPlayers3Left.setActive(touchPointsCount);
+}
+void setPlayer3LEDsToPreActiveBlink() {
+  LEDsPlayers3Right.setPreActiveBlink();
+  LEDsPlayers3Left.setPreActiveBlink();
 }
 
 // Set to Disconnected pulse

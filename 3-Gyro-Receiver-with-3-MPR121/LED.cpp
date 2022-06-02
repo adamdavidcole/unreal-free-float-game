@@ -1,6 +1,9 @@
 // LED.cpp
 #include "LED.h"
 
+int STANDBY_BASE_INTENSITY = 25;
+int STANDBY_BASE_BLINK_INTENSITY = 10;
+
 LED::LED(int _numpixels, int pin) {
 //  ledPin   = pin;
 //  ledState = LOW;
@@ -33,8 +36,8 @@ void LED::setPixelsColor(uint32_t color) {
 }
 
 void LED::setStandbyLights() {
-  int baseColor = 100;
-  int blinkFactor = 50;
+  int baseColor = STANDBY_BASE_INTENSITY;
+  int blinkFactor = STANDBY_BASE_BLINK_INTENSITY;
   int variation = sin(millis()/1000.0) * blinkFactor;
 
   int nextColor = baseColor + variation;
@@ -44,17 +47,23 @@ void LED::setStandbyLights() {
   setPixelsColor(color(nextColor,nextColor,nextColor));
 }
 
-void LED::setPreActive(int touchPointsCount, uint8_t capThreshold) {
-  touchPointsCount = constrain(touchPointsCount, 0, int(capThreshold) + 1);
-  float touchPointsFactor = float(touchPointsCount)/float(capThreshold + 1);
-  
-  int baseColor = 50 + 155 * touchPointsFactor;
-  int blinkFactor = 0;
-  int variation = sin(millis()/500.0) * blinkFactor;
+void LED::setPreActive(int touchPoints) {  
+  int baseColor = touchPoints > 0 ? 200 : STANDBY_BASE_INTENSITY;
+  int blinkFactor = touchPoints > 0 ? 55 : STANDBY_BASE_BLINK_INTENSITY;
+  int variation = sin(millis()/1000.0) * blinkFactor;
 
   int nextColor = baseColor + variation;
 
-  setPixelsColor(color(0,nextColor,0));
+  setPixelsColor(color(nextColor,nextColor,nextColor));
+}
+
+void LED::setPreActiveBlink() {  
+  int baseColor = 200;
+  int blinkFactor = 55;
+  int variation = sin(millis()/75.0) * blinkFactor;
+
+  int nextColor = baseColor + variation;  
+  setPixelsColor(color(nextColor,nextColor,nextColor));
 }
 
 void LED::setActive(int touchPointsCount) {

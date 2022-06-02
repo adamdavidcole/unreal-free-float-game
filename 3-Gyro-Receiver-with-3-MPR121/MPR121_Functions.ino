@@ -59,30 +59,51 @@ void readMPRs(){
 
    //store our readings as a binary array to make it easy to
  //see which touchpoint is on/off
- for(uint8_t i=0; i<12; i++){
+ int pinTotal = 12;
+ for(uint8_t i=0; i<pinTotal/2; i++){
     cap1values[i]=(int(currtouched1/(pow(2,(i)))))%2;
     cap2values[i]=(int(currtouched2/(pow(2,(i)))))%2;
     cap3values[i]=(int(currtouched3/(pow(2,(i)))))%2;
-    if(i<11){
-      if(cap1values[i]==1){
-        cap1count++;
-        }
-        if(cap2values[i]==1){
-        cap2count++;
-        }
-        if(cap3values[i]==1){
-        cap3count++;
-        }
-      }
+    if(cap1values[i]==1){
+      cap1countR++;
+    }
+    if(cap2values[i]==1){
+      cap2countR++;
+    }
+    if(cap3values[i]==1){
+      cap3countR++;
+    }
   }
+
+  for(uint8_t i=pinTotal/2; i<12; i++) {
+    cap1values[i]=(int(currtouched1/(pow(2,(i)))))%2;
+    cap2values[i]=(int(currtouched2/(pow(2,(i)))))%2;
+    cap3values[i]=(int(currtouched3/(pow(2,(i)))))%2;
+    if(cap1values[i]==1){
+     cap1countL++;
+    }
+    if(cap2values[i]==1){
+      cap2countL++;
+    }
+    if(cap3values[i]==1){
+      cap3countL++;
+    }
+  }
+
+  cap1countTotal = cap1countR + cap1countL;
+  cap2countTotal = cap2countR + cap2countL;
+  cap3countTotal = cap3countR + cap3countL;
  }
 
  
-float checkActivation(uint8_t counter,byte target,float tracker, int threshold){
-  if(counter>threshold){
+float checkActivation(uint8_t counterR, uint8_t counterL, byte target, float tracker, int threshold) {
+  if (counterR > 0 && counterL > 0){
     target=1;
-    }
-  else{target=0;}
-  tracker=tracker+(target-tracker)*0.2;
-  return tracker;
+  } else {
+    target=0;
   }
+  
+  tracker=tracker+(target-tracker)*0.2;
+  
+  return tracker;
+}
