@@ -38,13 +38,15 @@ float getSmoothedValue(float value, float target) {
 
 void initializeGyros(){
   Serial.println("initializeGyros start");
-  
+
   if(isBnoActive1 && !bno.begin())
   {
     /* There was a problem detecting the BNO055 ... check your connections */
     Serial.print("Ooops, no first BNO055 detected ... Check your wiring or I2C ADDR!");
     while(1);
   }
+
+  Serial.println("Bno1 Complete");
   
    if(isBnoActive2 && !bno2.begin())
   {
@@ -59,7 +61,7 @@ void initializeGyros(){
  //initialize incoming data array for Gryo3 attached on Arduino board2
   for (dataLength = 0; dataLength < 10; dataLength++) {
     inData[dataLength]=',';
-   }
+  }
  
    Serial.println("initializeGyros complete: bnos found");
 }
@@ -97,19 +99,19 @@ void readGyro3Data() {
   String readInValues = "a";
   String outputString = "";
 
-//   while (Serial1.available()) {
-//        char recieved = Serial1.read();
-//        inDataString += recieved; 
-//
-//        // Process message when new line character is recieved
-//        if (recieved == '\n')
-//        {
-////            Serial.print("Arduino Received: ");
-////            Serial.print(inDataString);
-//            outputString = inDataString;
-//            inDataString = ""; // Clear recieved buffer
-//        }
-//    }
+   while (Serial1.available()) {
+        char recieved = Serial1.read();
+        inDataString += recieved; 
+
+        // Process message when new line character is recieved
+        if (recieved == '\n')
+        {
+//            Serial.print("Arduino Received: ");
+//            Serial.print(inDataString);
+            outputString = inDataString;
+            inDataString = ""; // Clear recieved buffer
+        }
+    }
 
     String cleanDataString = outputString.substring(1, outputString.length() - 3);
     if (cleanDataString.length()) {

@@ -26,7 +26,7 @@ boolean forceCapTouched3 = false; // prod: false
 
 boolean isBnoActive1 = true;  // prod: true
 boolean isBnoActive2 = true; // prod: true
-boolean isBnoActive3 = true; // prod: true
+boolean isBnoActive3 = false; // prod: true
 
 /* ******* ******** ******** 
  *  END CONTROL VALUES FOR DEBUGGING
@@ -148,10 +148,10 @@ void setup() {
   while (!Serial) { // needed to keep leonardo/micro from starting too fast!
     delay(10);
   }
-//  Serial1.begin(9600);
-//  while (!Serial1) { // needed to keep leonardo/micro from starting too fast!
-//    delay(10);
-//  }
+  Serial1.begin(9600);
+  while (!Serial1) { // needed to keep leonardo/micro from starting too fast!
+    delay(10);
+  }
   Serial.println("starting up");
 
   //Initialize the gyroscopes
