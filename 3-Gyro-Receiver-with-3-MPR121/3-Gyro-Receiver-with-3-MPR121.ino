@@ -52,7 +52,7 @@ Adafruit_BNO055 bno2 = Adafruit_BNO055(55, 0x29);
 char inChar;
 char inData[10];
 int dataLength = 0;
-String gyro3Readings = "0000,0000,";
+String gyro3Readings;
 
 //for gyroscope info
 float gy1y=0;
@@ -454,7 +454,7 @@ void loop() {
     
     
 //      
-//    printGameState();
+    printGameState();
   }
 //
   updatePlayerStates();

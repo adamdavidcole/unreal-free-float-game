@@ -8,6 +8,12 @@ float IGNORE_VALUES_RANGE = 0.20;
 
 String inDataString;
 
+const byte numChars = 100;
+char myString[numChars];
+
+const unsigned int MAX_MESSAGE_LENGTH = 256;
+
+
 // UTILITIES
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max) {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
@@ -95,18 +101,101 @@ void readGyro2Data(){
 
 void readGyro3Data() {
   if (!isBnoActive3) return;
-boolean endOfLineReached = false;
-char myChar;
-char myString[] = "";
-String outputString = "";
- // Serial.println("readGyro3Data");
+  boolean endOfLineReached = false;
+  char myChar;
+  
+  int currCharIndex = 0;
+  
+  String outputString = "";
+//  Serial.println("readGyro3Data");
 
-  while (Serial1.available() && !endOfLineReached) {     // If anything comes in Serial1 (pins 0 & 1)
-    myChar = Serial1.read();
-    Serial.write(myChar);   // read it and send it out Serial (USB)
-    outputString = outputString + myChar;
-    if(myChar == '\n' ) { Serial.println("NL"); endOfLineReached = true; Serial.println(outputString);}
-  }
+   while (Serial1.available() > 0) {
+     //Create a place to hold the incoming message
+     static char message[MAX_MESSAGE_LENGTH];
+     static unsigned int message_pos = 0;
+  
+     //Read the next available byte in the serial receive buffer
+     char inByte = Serial1.read();
+  
+     //Message coming in (check not terminating character) and guard for over message size
+     if ( inByte != '\n' && (message_pos < MAX_MESSAGE_LENGTH - 1) )
+     {
+       //Add the incoming byte to our message
+       message[message_pos] = inByte;
+       message_pos++;
+     }
+     //Full message received...
+     else
+     {
+       //Add null character to string
+       message[message_pos] = '\0';
+
+       outputString = String(message);
+       //Print the message (or do other things)
+//       Serial.println(outputString);
+  
+       //Reset for the next message
+       message_pos = 0;
+     }
+   }
+
+   if (outputString.length() > 0) {
+//      Serial.println("final string: ");
+     
+      String cleanDataString = outputString.substring(1, outputString.length() - 3);
+      if (cleanDataString.length() > 0) {
+//            Serial.print("Clean data string: ");
+//            Serial.println(cleanDataString);
+//            gyro3Readings = String(cleanDataString);
+          getGyro3Values(cleanDataString);
+      }
+//
+//      Serial.println(gyro3Readings);
+
+      
+//      getGyro3Values();
+    }
+
+//  while (Serial1.available() && !endOfLineReached) {     // If anything comes in Serial1 (pins 0 & 1)
+//    myChar = Serial1.read();
+////    Serial.write(myChar);   // read it and send it out Serial (USB)
+//
+//    Serial.println(myChar);
+////    currCharIndex = currCharIndex + 1;
+////    Serial.print("Curr Length: ");
+////    Serial.println(currCharIndex);
+//
+//
+//    if (myChar == '\n' ) {
+//       Serial.println("NL");
+//       endOfLineReached = true;
+////       Serial.print("Length: ");
+////       Serial.println(currCharIndex);
+//    }
+
+
+
+    
+//    myString[currCharIndex] = myChar;
+//    currCharIndex += 1;
+////    Serial.print(currCharIndex);
+//
+//    if (myChar == '\n' ) {
+//      Serial.println("NL"); 
+//      endOfLineReached = true;
+//      myString[currCharIndex] = '\0';
+//
+//      Serial.print("Length: ");
+//      Serial.println(currCharIndex);
+//      for (int i = 0; i < currCharIndex; i++) {
+//        Serial.print("hello");
+//        Serial.print(myString[currCharIndex]);
+//      }
+//      Serial.println("");
+// 
+//      
+//    }
+//  }
 
   
 //  
@@ -136,15 +225,26 @@ String outputString = "";
 //          gyro3Readings = cleanDataString;
 //    }
 //
-//    Serial.println(outputString);
-//    getGyro3Values();
+//    if (outputString.length() > 0) {
+//      Serial.print("final string: ");
+//     
+//      String cleanDataString = outputString.substring(1, outputString.length() - 3);
+//      if (cleanDataString.length()) {
+//            gyro3Readings = cleanDataString;
+//      }
+//
+//       Serial.println(outputString);
+//
+//      
+////      getGyro3Values();
+//    }
 }
 
 
-void getGyro3Values(){
-   int firstCommaIndex = gyro3Readings.indexOf(',');
-   String firstValue = gyro3Readings.substring(0,firstCommaIndex);
-   String secondValue = gyro3Readings.substring(firstCommaIndex+1);
+void getGyro3Values(String cleanDataString){
+   int firstCommaIndex = cleanDataString.indexOf(',');
+   String firstValue = cleanDataString.substring(0,firstCommaIndex);
+   String secondValue = cleanDataString.substring(firstCommaIndex+1);
 
    // NOTE: these are being sent backwards, but thats ok for now
    float mappedEventZ = mapGyroZ(firstValue.toFloat());
