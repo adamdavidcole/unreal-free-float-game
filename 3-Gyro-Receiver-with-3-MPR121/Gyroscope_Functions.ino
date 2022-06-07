@@ -95,30 +95,49 @@ void readGyro2Data(){
 
 void readGyro3Data() {
   if (!isBnoActive3) return;
-  
-  String readInValues = "a";
-  String outputString = "";
+boolean endOfLineReached = false;
+char myChar;
+char myString[] = "";
+String outputString = "";
+ // Serial.println("readGyro3Data");
 
-   while (Serial1.available()) {
-        char recieved = Serial1.read();
-        inDataString += recieved; 
+  while (Serial1.available() && !endOfLineReached) {     // If anything comes in Serial1 (pins 0 & 1)
+    myChar = Serial1.read();
+    Serial.write(myChar);   // read it and send it out Serial (USB)
+    outputString = outputString + myChar;
+    if(myChar == '\n' ) { Serial.println("NL"); endOfLineReached = true; Serial.println(outputString);}
+  }
+
+  
+//  
+//  String readInValues = "a";
+//  String outputString = "";
+//  boolean endOfLineReached = false;
+
+//   if (Serial1.available() && !endOfLineReached) {
+//        char recieved = Serial1.read();
+//        inDataString += recieved; 
+//       
+//        Serial.write(recieved);
 
         // Process message when new line character is recieved
-        if (recieved == '\n')
-        {
-//            Serial.print("Arduino Received: ");
-//            Serial.print(inDataString);
-            outputString = inDataString;
-            inDataString = ""; // Clear recieved buffer
-        }
-    }
+//        if (recieved == '\n')
+//        {
+//          endOfLineReached = true;
+////            Serial.print("Arduino Received: ");
+////            Serial.print(inDataString);
+//            outputString = inDataString;
+//            inDataString = ""; // Clear recieved buffer
+//        }
+//    }
 
-    String cleanDataString = outputString.substring(1, outputString.length() - 3);
-    if (cleanDataString.length()) {
-          gyro3Readings = cleanDataString;
-    }
-
-    getGyro3Values();
+//    String cleanDataString = outputString.substring(1, outputString.length() - 3);
+//    if (cleanDataString.length()) {
+//          gyro3Readings = cleanDataString;
+//    }
+//
+//    Serial.println(outputString);
+//    getGyro3Values();
 }
 
 
