@@ -107,9 +107,7 @@ void readGyro3Data() {
   int currCharIndex = 0;
   
   String outputString = "";
-//  Serial.println("readGyro3Data");
-
-   while (Serial1.available() > 0) {
+  while (Serial1.available() > 0) {
      //Create a place to hold the incoming message
      static char message[MAX_MESSAGE_LENGTH];
      static unsigned int message_pos = 0;
@@ -132,7 +130,6 @@ void readGyro3Data() {
 
        outputString = String(message);
        //Print the message (or do other things)
-//       Serial.println(outputString);
   
        //Reset for the next message
        message_pos = 0;
@@ -140,104 +137,12 @@ void readGyro3Data() {
    }
 
    if (outputString.length() > 0) {
-//      Serial.println("final string: ");
      
       String cleanDataString = outputString.substring(1, outputString.length() - 3);
       if (cleanDataString.length() > 0) {
-//            Serial.print("Clean data string: ");
-//            Serial.println(cleanDataString);
-//            gyro3Readings = String(cleanDataString);
           getGyro3Values(cleanDataString);
       }
-//
-//      Serial.println(gyro3Readings);
-
-      
-//      getGyro3Values();
     }
-
-//  while (Serial1.available() && !endOfLineReached) {     // If anything comes in Serial1 (pins 0 & 1)
-//    myChar = Serial1.read();
-////    Serial.write(myChar);   // read it and send it out Serial (USB)
-//
-//    Serial.println(myChar);
-////    currCharIndex = currCharIndex + 1;
-////    Serial.print("Curr Length: ");
-////    Serial.println(currCharIndex);
-//
-//
-//    if (myChar == '\n' ) {
-//       Serial.println("NL");
-//       endOfLineReached = true;
-////       Serial.print("Length: ");
-////       Serial.println(currCharIndex);
-//    }
-
-
-
-    
-//    myString[currCharIndex] = myChar;
-//    currCharIndex += 1;
-////    Serial.print(currCharIndex);
-//
-//    if (myChar == '\n' ) {
-//      Serial.println("NL"); 
-//      endOfLineReached = true;
-//      myString[currCharIndex] = '\0';
-//
-//      Serial.print("Length: ");
-//      Serial.println(currCharIndex);
-//      for (int i = 0; i < currCharIndex; i++) {
-//        Serial.print("hello");
-//        Serial.print(myString[currCharIndex]);
-//      }
-//      Serial.println("");
-// 
-//      
-//    }
-//  }
-
-  
-//  
-//  String readInValues = "a";
-//  String outputString = "";
-//  boolean endOfLineReached = false;
-
-//   if (Serial1.available() && !endOfLineReached) {
-//        char recieved = Serial1.read();
-//        inDataString += recieved; 
-//       
-//        Serial.write(recieved);
-
-        // Process message when new line character is recieved
-//        if (recieved == '\n')
-//        {
-//          endOfLineReached = true;
-////            Serial.print("Arduino Received: ");
-////            Serial.print(inDataString);
-//            outputString = inDataString;
-//            inDataString = ""; // Clear recieved buffer
-//        }
-//    }
-
-//    String cleanDataString = outputString.substring(1, outputString.length() - 3);
-//    if (cleanDataString.length()) {
-//          gyro3Readings = cleanDataString;
-//    }
-//
-//    if (outputString.length() > 0) {
-//      Serial.print("final string: ");
-//     
-//      String cleanDataString = outputString.substring(1, outputString.length() - 3);
-//      if (cleanDataString.length()) {
-//            gyro3Readings = cleanDataString;
-//      }
-//
-//       Serial.println(outputString);
-//
-//      
-////      getGyro3Values();
-//    }
 }
 
 

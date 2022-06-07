@@ -24,8 +24,8 @@ boolean forceCapTouched1 = false;  // prod: false
 boolean forceCapTouched2 = false; // prod: false
 boolean forceCapTouched3 = false; // prod: false
 
-boolean isBnoActive1 = false;  // prod: true
-boolean isBnoActive2 = false; // prod: true
+boolean isBnoActive1 = true;  // prod: true
+boolean isBnoActive2 = true; // prod: true
 boolean isBnoActive3 = true; // prod: true
 
 /* ******* ******** ******** 
@@ -443,30 +443,19 @@ void updateLEDs() {
 
 void loop() {
 //  Serial.println("looping");
-//
- 
-//
-  updateGyroState();
+
+  updateCapTouchState();
+  
   if (shouldPrintStateUpdate()) {
     timeOfLastStateUpdate = millis();
 
-    updateCapTouchState();
-    
-    
-//      
+    updateGyroState();
+      
     printGameState();
   }
-//
+
   updatePlayerStates();
   updateLEDs();
-//  
+ 
 //  delay(10);
-
-//  if (Serial.available()) {      // If anything comes in Serial (USB),
-//    Serial1.write(Serial.read());   // read it and send it out Serial1 (pins 0 & 1)
-//  }
-//
-//  if (Serial1.available()) {     // If anything comes in Serial1 (pins 0 & 1)
-//    Serial.write(Serial1.read());   // read it and send it out Serial (USB)
-//  }
 }
