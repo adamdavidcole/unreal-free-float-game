@@ -18,8 +18,8 @@ void initializeMPRs(){
     while (1);
   }
 
-  int touchThreshold = 35;
-  int releaseThreshold = 20;
+  int touchThreshold = 8;
+  int releaseThreshold = 6;
   if (isCapActive1) cap1.setThresholds(touchThreshold,releaseThreshold);
   if (isCapActive2) cap2.setThresholds(touchThreshold,releaseThreshold);
   if (isCapActive3) cap3.setThresholds(touchThreshold,releaseThreshold);
@@ -104,8 +104,12 @@ void readMPRs(){
  }
 
  
-float checkActivation(uint8_t counterR, uint8_t counterL, byte target, float tracker, int threshold) {
-  if (counterR > 0 && counterL > 0){
+float checkActivation(uint8_t counterR, uint8_t counterL, byte target, float tracker, int threshold, boolean singleHandMode) {
+  boolean isActive = singleHandMode ? 
+    (counterR > 0 || counterL > 0) : 
+    (counterR > 0 && counterL > 0);
+  
+  if (isActive){
     target=1;
   } else {
     target=0;

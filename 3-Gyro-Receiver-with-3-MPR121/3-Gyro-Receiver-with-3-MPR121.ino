@@ -28,6 +28,8 @@ boolean isBnoActive1 = true;  // prod: true
 boolean isBnoActive2 = true; // prod: true
 boolean isBnoActive3 = true; // prod: true
 
+boolean singleHandMode = false;
+
 /* ******* ******** ******** 
  *  END CONTROL VALUES FOR DEBUGGING
  ******** ******** ******** */
@@ -119,7 +121,13 @@ unsigned long timeOfLastDisconnectPlayer2 = disconnectFeedbackDuration;
 unsigned long timeOfLastDisconnectPlayer3 = disconnectFeedbackDuration;
 
 // Time player needs to be touching all touchpoints to be considered fully activated
-unsigned long preFullActivationDuration = 1000;
+unsigned long preFullActivationDuration = 100;
+unsigned long timeofLastPreActivationPlayer1 = 0;
+unsigned long timeofLastPreActivationPlayer2 = 0;
+unsigned long timeofLastPreActivationPlayer3 = 0;
+
+// Time player needs to be touching all touchpoints to be considered fully activated
+unsigned long preFullPreActivationDuration = 1000;
 unsigned long timeofLastActivationPlayer1 = 0;
 unsigned long timeofLastActivationPlayer2 = 0;
 unsigned long timeofLastActivationPlayer3 = 0;
@@ -282,6 +290,8 @@ void updateGyroState() {
 }
 
 void updateCapTouchState() {
+    unsigned long currTime = millis();
+  
     //reset our cap sensor values
     resetArray(cap1values);
     resetArray(cap2values);
@@ -298,9 +308,9 @@ void updateCapTouchState() {
   
     //get all three MPR121 readings
     readMPRs();
-    cap1active=checkActivation(cap1countR, cap1countL, cap1target, cap1active, threshold);
-    cap2active=checkActivation(cap2countR, cap2countL, cap2target, cap2active, threshold);
-    cap3active=checkActivation(cap3countR, cap3countL, cap3target, cap3active, threshold);
+    cap1active=checkActivation(cap1countR, cap1countL, cap1target, cap1active, threshold, singleHandMode);
+    cap2active=checkActivation(cap2countR, cap2countL, cap2target, cap2active, threshold, singleHandMode);
+    cap3active=checkActivation(cap3countR, cap3countL, cap3target, cap3active, threshold, singleHandMode);
 
     //check if stations are "activated" as defined by our threshold
     if(cap1active<0.2){
