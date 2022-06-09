@@ -17,6 +17,14 @@ void initializeMPRs(){
     Serial.println("MPR121 cap3 not found, check wiring?");
     while (1);
   }
+
+  int touchThreshold = 35;
+  int releaseThreshold = 20;
+  if (isCapActive1) cap1.setThresholds(touchThreshold,releaseThreshold);
+  if (isCapActive2) cap2.setThresholds(touchThreshold,releaseThreshold);
+  if (isCapActive3) cap3.setThresholds(touchThreshold,releaseThreshold);
+  
+
   
   Serial.println("MPR121s found!");
 }
@@ -103,7 +111,7 @@ float checkActivation(uint8_t counterR, uint8_t counterL, byte target, float tra
     target=0;
   }
   
-  tracker=tracker+(target-tracker)*0.2;
+  tracker = tracker + (target - tracker) * 0.2;
   
   return tracker;
 }
