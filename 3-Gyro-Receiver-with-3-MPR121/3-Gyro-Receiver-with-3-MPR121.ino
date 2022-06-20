@@ -121,13 +121,19 @@ unsigned long timeOfLastDisconnectPlayer2 = disconnectFeedbackDuration;
 unsigned long timeOfLastDisconnectPlayer3 = disconnectFeedbackDuration;
 
 // Time player needs to be touching all touchpoints to be considered fully activated
-unsigned long preFullActivationDuration = 100;
-unsigned long timeofLastPreActivationPlayer1 = 0;
-unsigned long timeofLastPreActivationPlayer2 = 0;
-unsigned long timeofLastPreActivationPlayer3 = 0;
+unsigned long preFullPreActivationDuration = 250;
+unsigned long timeofLastPreActivationStartPlayer1R = preFullPreActivationDuration;
+unsigned long timeofLastPreActivationStartPlayer2R = preFullPreActivationDuration;
+unsigned long timeofLastPreActivationStartPlayer3R = preFullPreActivationDuration;
 
 // Time player needs to be touching all touchpoints to be considered fully activated
-unsigned long preFullPreActivationDuration = 1000;
+unsigned long timeofLastPreActivationStartPlayer1L = preFullPreActivationDuration;
+unsigned long timeofLastPreActivationStartPlayer2L = preFullPreActivationDuration;
+unsigned long timeofLastPreActivationStartPlayer3L = preFullPreActivationDuration;
+
+
+// Time player needs to be touching all touchpoints to be considered fully activated
+unsigned long preFullActivationDuration = 1000;
 unsigned long timeofLastActivationPlayer1 = 0;
 unsigned long timeofLastActivationPlayer2 = 0;
 unsigned long timeofLastActivationPlayer3 = 0;
@@ -244,6 +250,11 @@ boolean isFullyActivated(unsigned long timeOfLastActivation) {
   return timeSinceLastActivation > preFullActivationDuration;
 }
 
+boolean isFullyPreActivated(unsigned long timeOfLastPreActivationStart) {
+  unsigned long timeSinceLastPreActivation = millis() - timeOfLastPreActivationStart;
+  return timeSinceLastPreActivation > preFullPreActivationDuration;
+}
+
 boolean shouldPrintStateUpdate() {
    unsigned long timeSinceLastStateUpdate = millis() - timeOfLastStateUpdate;
    return timeSinceLastStateUpdate > timeToUpdateState;
@@ -296,12 +307,25 @@ void updateCapTouchState() {
     resetArray(cap1values);
     resetArray(cap2values);
     resetArray(cap3values);
+
+    int preCap1CountR = cap1countR;
+    int preCap2CountR = cap2countR;
+    int preCap3CountR = cap3countR;
+    
+    int preCap1CountL = cap1countL;
+    int preCap2CountL = cap2countL;
+    int preCap3CountL = cap3countL;
+    
     cap1countR = 0;
     cap1countL = 0;
     cap2countR = 0;
     cap2countL = 0;
     cap3countR = 0;
     cap3countL = 0;
+
+    int  preCap1CountTotal = cap1countTotal;
+    int  preCap2CountTotal = cap2countTotal;
+    int  preCap3CountTotal = cap3countTotal;
     cap1countTotal = 0;
     cap2countTotal = 0;
     cap3countTotal = 0;
@@ -368,6 +392,26 @@ void updateCapTouchState() {
       }
       checkpoint3=1;
     }
+
+    if (preCap1CountR == 0 && cap1countR > 0) {
+      timeofLastPreActivationStartPlayer1R = millis();    
+    }
+    if (preCap2CountR == 0 && cap2countR > 0) {
+      timeofLastPreActivationStartPlayer2R = millis();    
+    }
+    if (preCap3CountR == 0 && cap3countR > 0) {
+      timeofLastPreActivationStartPlayer3R = millis();    
+    }
+    
+    if (preCap1CountL == 0 && cap1countL > 0) {
+      timeofLastPreActivationStartPlayer1L = millis();    
+    }
+    if (preCap2CountL == 0 && cap2countL > 0) {
+      timeofLastPreActivationStartPlayer2L = millis();    
+    }
+    if (preCap3CountL == 0 && cap3countL > 0) {
+      timeofLastPreActivationStartPlayer3L = millis();    
+    }
 }
 
 void updatePlayerStates() {
@@ -376,7 +420,7 @@ void updatePlayerStates() {
      playerState1 = DISCONNECTED;
   } else if (checkpoint1 == 1 && isFullyActivated(timeofLastActivationPlayer1)) {
      playerState1 = ACTIVE;
-  } else if (cap1countTotal > 0) {
+  } else if (cap1countTotal > 0 && isFullyPreActivated(timeofLastPreActivationStartPlayer1R) && isFullyPreActivated(timeofLastPreActivationStartPlayer1L)) {
      playerState1 = PREACTIVE;
   } else {
      playerState1 = STANDBY;
@@ -387,7 +431,7 @@ void updatePlayerStates() {
      playerState2 = DISCONNECTED;
   } else if (checkpoint2 == 1 && isFullyActivated(timeofLastActivationPlayer2)) {
      playerState2 = ACTIVE;
-  } else if (cap2countTotal > 0) {
+  } else if (cap2countTotal > 0 && isFullyPreActivated(timeofLastPreActivationStartPlayer2R) && isFullyPreActivated(timeofLastPreActivationStartPlayer2L)) {
      playerState2 = PREACTIVE;
   } else {
      playerState2 = STANDBY;
@@ -398,7 +442,7 @@ void updatePlayerStates() {
      playerState3 = DISCONNECTED;
   } else if (checkpoint3 == 1 && isFullyActivated(timeofLastActivationPlayer3)) {
      playerState3 = ACTIVE;
-  } else if (cap3countTotal > 0) {
+  } else if (cap3countTotal > 0 && isFullyPreActivated(timeofLastPreActivationStartPlayer3R) && isFullyPreActivated(timeofLastPreActivationStartPlayer3L)) {
      playerState3 = PREACTIVE;
   } else {
      playerState3 = STANDBY;
@@ -466,6 +510,11 @@ void loop() {
 
   updatePlayerStates();
   updateLEDs();
- 
-//  delay(10);
+//
+//  Serial.print(timeofLastPreActivationStartPlayer1);
+//  Serial.print(", ");
+//  Serial.print(timeofLastPreActivationStartPlayer2);
+//  Serial.print(", ");
+//  Serial.println(timeofLastPreActivationStartPlayer3);
+//  delay(1);
 }
