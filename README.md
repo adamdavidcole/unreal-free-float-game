@@ -76,9 +76,7 @@ The week leading up to the big show involved our team basically converting the l
 
 ![user placing hand](docs/images/single_hand.JPG)
 
-Setting up started smoothly enough, but just a couple hours before the show, we noticed some really poor behavior with our MRP121 touch sensors acting unreliably. We always had a problem with these chips, and perhaps we were overly naive thinking that they would work on opening night, but unfortunately that was not the case. These chips functioning well is essential for the game to work, otherwise the player cant begin gameplay.
-
-![user placing hand](docs/images/user_placing_hand.png)
+Setting up started smoothly enough, but just a couple hours before the show, we noticed some really poor behavior with our MRP121 touch sensors acting unreliably. We always had a problem with these chips, and perhaps we were overly naive thinking that they would work on opening night, but unfortunately, that was not the case. These chips functioning well is essential for the game to work, otherwise the player cant begin gameplay.
 
 So with just an hour before the show, I opened my laptop, sat on the ground and started coding a new solution to add thresholds, timers, and stability to the touch sensors (seen in this [commit](https://github.com/adamdavidcole/unreal-free-float-game/commit/1fa5f1edc5e4aff2a0fe7e707d8f032c8257771f)).
 
