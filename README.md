@@ -4,6 +4,8 @@
 
 SoulNet is a critical exploration of the relationships between virtual worlds and freedom. In this experience, the participant's mind is put in a state of flow while their body is in a state of discomfort. 
 
+[![SoulNet Video Image](docs/images/video_thumb.png)](https://www.youtube.com/watch?v=XkymM3IcORg)
+
 This interactive installation is staged as a fictional tech demo set in the near future. Participants are beckoned by a voice that offers "a new virtual world made in their image". To enter, users must put on a tethered bio helmet and place both hands in the _SoulScanner™️_ globes which are filled with a wet goo. These hand contact points are set near the ground, requiring players to crouch and twist their arms in awkward ways.
 
 Once the user is "hooked in", their digital avatar appears in the  game and they are able to experience "free flow" in the virtual world by moving their character with their head movements. In the game, users can interact with other players, collect items, grow their trails, and explore freely. If the player ever detaches from the goo, an aggressive voice demands they re-engage. Failing do to so leads to the death of their avatar.
