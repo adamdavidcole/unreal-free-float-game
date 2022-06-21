@@ -1,5 +1,7 @@
 # SoulNet
 
+**GitHub Repo Link:** [https://github.com/adamdavidcole/unreal-free-float-game/tree/adam_submission](https://github.com/adamdavidcole/unreal-free-float-game/tree/adam_submission)
+
 ### Introduction
 
 SoulNet is a critical exploration of the relationships between virtual worlds and freedom. In this experience, the participant's mind is put in a state of flow while their body is in a state of discomfort. 
