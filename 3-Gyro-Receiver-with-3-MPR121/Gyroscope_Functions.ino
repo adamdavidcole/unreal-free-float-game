@@ -61,13 +61,30 @@ void initializeGyros(){
     while(1);
   }
 
+  Serial.println("MPU6050 (Gyro3) Start!");
+
+  if (isBnoActive3 && !mpu.begin()) {
+    Serial.println("Failed to find MPU6050 chip");
+    while (1) {
+      delay(10);
+    }
+  }
+
+  
+  Serial.println("MPU6050 (Gyro3) Found!");
+  mpu_accel = mpu.getAccelerometerSensor();
+  mpu_accel->printSensorDetails();
+ 
+
   if (isBnoActive1) bno.setExtCrystalUse(true);
   if (isBnoActive2) bno2.setExtCrystalUse(true);
 
  //initialize incoming data array for Gryo3 attached on Arduino board2
-  for (dataLength = 0; dataLength < 10; dataLength++) {
-    inData[dataLength]=',';
-  }
+//  for (dataLength = 0; dataLength < 10; dataLength++) {
+//    inData[dataLength]=',';
+//  }
+
+  
  
    Serial.println("initializeGyros complete: bnos found");
 }
@@ -101,48 +118,71 @@ void readGyro2Data(){
 
 void readGyro3Data() {
   if (!isBnoActive3) return;
-  boolean endOfLineReached = false;
-  char myChar;
   
-  int currCharIndex = 0;
-  
-  String outputString = "";
-  while (Serial1.available() > 0) {
-     //Create a place to hold the incoming message
-     static char message[MAX_MESSAGE_LENGTH];
-     static unsigned int message_pos = 0;
-  
-     //Read the next available byte in the serial receive buffer
-     char inByte = Serial1.read();
-  
-     //Message coming in (check not terminating character) and guard for over message size
-     if ( inByte != '\n' && (message_pos < MAX_MESSAGE_LENGTH - 1) )
-     {
-       //Add the incoming byte to our message
-       message[message_pos] = inByte;
-       message_pos++;
-     }
-     //Full message received...
-     else
-     {
-       //Add null character to string
-       message[message_pos] = '\0';
+  sensors_event_t accel;
+  mpu_accel->getEvent(&accel);
+//
+//  
+//  float mappedEventY = (accel.acceleration.x);
+//  float mappedEventZ = (accel.acceleration.y);
+//
+//  gy3y = getSmoothedValue(gy3y, mappedEventY) * -1.0;
+//  gy3z = getSmoothedValue(gy3z, mappedEventZ);
 
-       outputString = String(message);
-       //Print the message (or do other things)
-  
-       //Reset for the next message
-       message_pos = 0;
-     }
-   }
 
-   if (outputString.length() > 0) {
-     
-      String cleanDataString = outputString.substring(1, outputString.length() - 3);
-      if (cleanDataString.length() > 0) {
-          getGyro3Values(cleanDataString);
-      }
-    }
+
+
+
+
+///// old 
+//  Serial.print("\t\tAccel X: ");
+//  Serial.print(accel.acceleration.x);
+//  Serial.print(" \tY: ");
+//  Serial.print(accel.acceleration.y);
+//  Serial.print(" \tZ: ");
+//  Serial.print(accel.acceleration.z);
+//  boolean endOfLineReached = false;
+//  char myChar;
+//  
+//  int currCharIndex = 0;
+//  
+//  String outputString = "";
+//  while (Serial1.available() > 0) {
+//     //Create a place to hold the incoming message
+//     static char message[MAX_MESSAGE_LENGTH];
+//     static unsigned int message_pos = 0;
+//  
+//     //Read the next available byte in the serial receive buffer
+//     char inByte = Serial1.read();
+//  
+//     //Message coming in (check not terminating character) and guard for over message size
+//     if ( inByte != '\n' && (message_pos < MAX_MESSAGE_LENGTH - 1) )
+//     {
+//       //Add the incoming byte to our message
+//       message[message_pos] = inByte;
+//       message_pos++;
+//     }
+//     //Full message received...
+//     else
+//     {
+//       //Add null character to string
+//       message[message_pos] = '\0';
+//
+//       outputString = String(message);
+//       //Print the message (or do other things)
+//  
+//       //Reset for the next message
+//       message_pos = 0;
+//     }
+//   }
+//
+//   if (outputString.length() > 0) {
+//     
+//      String cleanDataString = outputString.substring(1, outputString.length() - 3);
+//      if (cleanDataString.length() > 0) {
+//          getGyro3Values(cleanDataString);
+//      }
+//    }
 }
 
 

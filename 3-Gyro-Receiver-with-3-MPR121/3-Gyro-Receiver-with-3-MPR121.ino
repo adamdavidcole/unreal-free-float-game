@@ -3,6 +3,7 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
+#include <Adafruit_MPU6050.h>
 
 //include libraries for MPR121`
 #include <Wire.h>
@@ -18,8 +19,8 @@
  ******** ******** ******** */
  
 boolean isCapActive1 = true; // prod: true
-boolean isCapActive2 = true; // prod: true
-boolean isCapActive3 = true; // prod: true
+boolean isCapActive2 = false; // prod: true
+boolean isCapActive3 = false; // prod: true
 boolean forceCapTouched1 = false;  // prod: false
 boolean forceCapTouched2 = false; // prod: false
 boolean forceCapTouched3 = false; // prod: false
@@ -47,6 +48,9 @@ Adafruit_MPR121 cap3 = Adafruit_MPR121();
 //one sensor of them has ADR connected to 3 volts to change the default address
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 Adafruit_BNO055 bno2 = Adafruit_BNO055(55, 0x29);
+
+Adafruit_MPU6050 mpu;
+Adafruit_Sensor *mpu_accel;
 
 //for Hardware Serial Communication:
 //Leonardo Board One Pin0 is connected to Leonardo Board Two Pin 1
@@ -158,7 +162,7 @@ PlayerState playerState3 = STANDBY;
 
 void setup() {
   // start Serial to write to computer, Serial1 to listen to the sender board
-  Serial.begin(9600);
+  Serial.begin(115200);
   while (!Serial) { // needed to keep leonardo/micro from starting too fast!
     delay(10);
   }
@@ -516,5 +520,5 @@ void loop() {
 //  Serial.print(timeofLastPreActivationStartPlayer2);
 //  Serial.print(", ");
 //  Serial.println(timeofLastPreActivationStartPlayer3);
-//  delay(1);
+  delay(100);
 }
