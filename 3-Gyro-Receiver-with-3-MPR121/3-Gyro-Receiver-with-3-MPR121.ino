@@ -3,7 +3,12 @@
 #include <Adafruit_Sensor.h>
 #include <Adafruit_BNO055.h>
 #include <utility/imumaths.h>
-#include <Adafruit_MPU6050.h>
+//#include <Adafruit_MPU6050.h>
+
+// I2Cdev and MPU6050 must be installed as libraries, or else the .cpp/.h files
+// for both classes must be in the include path of your project
+#include "I2Cdev.h"
+#include "MPU6050.h"
 
 //include libraries for MPR121`
 #include <Wire.h>
@@ -21,9 +26,9 @@
 boolean isCapActive1 = true; // prod: true
 boolean isCapActive2 = false; // prod: true
 boolean isCapActive3 = false; // prod: true
-boolean forceCapTouched1 = false;  // prod: false
-boolean forceCapTouched2 = false; // prod: false
-boolean forceCapTouched3 = false; // prod: false
+boolean forceCapTouched1 = true;  // prod: false
+boolean forceCapTouched2 = true; // prod: false
+boolean forceCapTouched3 = true; // prod: false
 
 boolean isBnoActive1 = true;  // prod: true
 boolean isBnoActive2 = true; // prod: true
@@ -48,9 +53,20 @@ Adafruit_MPR121 cap3 = Adafruit_MPR121();
 //one sensor of them has ADR connected to 3 volts to change the default address
 Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x28);
 Adafruit_BNO055 bno2 = Adafruit_BNO055(55, 0x29);
+//
+//Adafruit_MPU6050 mpu;
+//Adafruit_Sensor *mpu_accel;
 
-Adafruit_MPU6050 mpu;
-Adafruit_Sensor *mpu_accel;
+// class default I2C address is 0x68
+// specific I2C addresses may be passed as a parameter here
+// AD0 low = 0x68 (default for InvenSense evaluation board)
+// AD0 high = 0x69
+MPU6050 accelgyro;
+//MPU6050 accelgyro(0x69); // <-- use for AD0 high
+
+int16_t ax, ay, az;
+int16_t gx, gy, gz;
+
 
 //for Hardware Serial Communication:
 //Leonardo Board One Pin0 is connected to Leonardo Board Two Pin 1
@@ -161,16 +177,24 @@ PlayerState playerState2 = STANDBY;
 PlayerState playerState3 = STANDBY;
 
 void setup() {
+  // join I2C bus (I2Cdev library doesn't do this automatically)
+  #if I2CDEV_IMPLEMENTATION == I2CDEV_ARDUINO_WIRE
+      Wire.begin();
+  #elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
+      Fastwire::setup(400, true);
+  #endif
+  
   // start Serial to write to computer, Serial1 to listen to the sender board
-  Serial.begin(115200);
+  Serial.begin(9600);
   while (!Serial) { // needed to keep leonardo/micro from starting too fast!
     delay(10);
   }
-  Serial1.begin(9600);
-  while (!Serial1) { // needed to keep leonardo/micro from starting too fast!
-    delay(10);
-  }
+//  Serial1.begin(9600);
+//  while (!Serial1) { // needed to keep leonardo/micro from starting too fast!
+//    delay(10);
+//  }
   Serial.println("starting up");
+
 
   //Initialize the gyroscopes
   initializeGyros();

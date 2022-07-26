@@ -3,6 +3,9 @@ float GYRO_RANGE_MAX_Z = 30.0;
 float GYRO_RANGE_MIN_Y = -15;
 float GYRO_RANGE_MAX_Y = 30;
 
+float MPU_GYRO_RANGE_MIN = -10000;
+float MPU_GYRO_RANGE_MAX = 10000;
+
 float SMOOTH_VALUE_FACTOR = 0.5;
 float IGNORE_VALUES_RANGE = 0.20;
 
@@ -30,6 +33,11 @@ float mapGyroY(float val) {
 float mapGyroZ(float val) {
   return mapfloat(val, GYRO_RANGE_MIN_Z, GYRO_RANGE_MAX_Z, -1.0, 1.0);
 }
+float mapMpuGyro(float val) {
+  val = constrain(val, MPU_GYRO_RANGE_MIN, MPU_GYRO_RANGE_MAX);
+  return mapfloat(val, MPU_GYRO_RANGE_MIN, MPU_GYRO_RANGE_MAX, -1.0, 1.0);
+}
+
 
 float getSmoothedValue(float value, float target) {
   if (abs(target) < IGNORE_VALUES_RANGE) target = 0;
@@ -62,18 +70,27 @@ void initializeGyros(){
   }
 
   Serial.println("MPU6050 (Gyro3) Start!");
+//
+  if (isBnoActive3) {
+//    Serial.println("Failed to find MPU6050 chip");
+//    while (1) {
+//      delay(10);
+//    }
 
-  if (isBnoActive3 && !mpu.begin()) {
-    Serial.println("Failed to find MPU6050 chip");
-    while (1) {
-      delay(10);
-    }
+    Serial.println("Initializing I2C devices...");
+    accelgyro.initialize();
+
+    // verify connection
+    Serial.println("Testing device connections...");
+    Serial.println(accelgyro.testConnection() ? "MPU6050 connection successful" : "MPU6050 connection failed");
+
   }
 
   
-  Serial.println("MPU6050 (Gyro3) Found!");
-  mpu_accel = mpu.getAccelerometerSensor();
-  mpu_accel->printSensorDetails();
+
+//  Serial.println("MPU6050 (Gyro3) Found!");
+//  mpu_accel = mpu.getAccelerometerSensor();
+//  mpu_accel->printSensorDetails();
  
 
   if (isBnoActive1) bno.setExtCrystalUse(true);
@@ -87,6 +104,8 @@ void initializeGyros(){
   
  
    Serial.println("initializeGyros complete: bnos found");
+
+//   delay(3000);
 }
 
 
@@ -118,16 +137,43 @@ void readGyro2Data(){
 
 void readGyro3Data() {
   if (!isBnoActive3) return;
-  
-  sensors_event_t accel;
-  mpu_accel->getEvent(&accel);
+
+  accelgyro.getMotion6(&ax, &ay, &az, &gx, &gy, &gz);
+
+    // these methods (and a few others) are also available
+    //accelgyro.getAcceleration(&ax, &ay, &az);
+    //accelgyro.getRotation(&gx, &gy, &gz);
+
+//    #ifdef OUTPUT_READABLE_ACCELGYRO
+        // display tab-separated accel/gyro x/y/z values
+//    Serial.print("a/g:\t");
+//    Serial.print(ax); Serial.print("\t");
+//    Serial.print(ay); Serial.print("\t");
+//    Serial.print(az); Serial.print("\t");
+//  sensors_event_t accel;
+//  mpu.getEvent(&accel);
+//  mpu_accel = mpu.getAccelerometerSensor();
+//  mpu_accel->printSensorDetails();
+//  
+//  mpu_accel->printSensorDetails();
+
+
+//  sensors_event_t a, g, temp;
+//  mpu.getEvent(&a, &g, &temp);
+//  delay(500);
+
+  /* Print out the values */
+//  Serial.print("Acceleration X: ");
+//  Serial.print(a.acceleration.x);
 //
 //  
-//  float mappedEventY = (accel.acceleration.x);
-//  float mappedEventZ = (accel.acceleration.y);
-//
-//  gy3y = getSmoothedValue(gy3y, mappedEventY) * -1.0;
-//  gy3z = getSmoothedValue(gy3z, mappedEventZ);
+  float mappedEventY = mapMpuGyro(ay);
+  float mappedEventZ = mapMpuGyro(ax);
+////
+  gy3y = getSmoothedValue(gy3y, mappedEventY) * -1.0;
+  gy3z = getSmoothedValue(gy3z, mappedEventZ);
+//    gy3y = mappedEventY;
+//    gy3z = mappedEventZ;
 
 
 
@@ -186,15 +232,15 @@ void readGyro3Data() {
 }
 
 
-void getGyro3Values(String cleanDataString){
-   int firstCommaIndex = cleanDataString.indexOf(',');
-   String firstValue = cleanDataString.substring(0,firstCommaIndex);
-   String secondValue = cleanDataString.substring(firstCommaIndex+1);
-
-   // NOTE: these are being sent backwards, but thats ok for now
-   float mappedEventZ = mapGyroZ(firstValue.toFloat());
-   float mappedEventY= mapGyroY(secondValue.toFloat());
-
-   gy3y = getSmoothedValue(gy3y, mappedEventY) * -1.0;
-   gy3z = getSmoothedValue(gy3z, mappedEventZ);
- }
+//void getGyro3Values(String cleanDataString){
+//   int firstCommaIndex = cleanDataString.indexOf(',');
+//   String firstValue = cleanDataString.substring(0,firstCommaIndex);
+//   String secondValue = cleanDataString.substring(firstCommaIndex+1);
+//
+//   // NOTE: these are being sent backwards, but thats ok for now
+//   float mappedEventZ = mapGyroZ(firstValue.toFloat());
+//   float mappedEventY= mapGyroY(secondValue.toFloat());
+//
+//   gy3y = getSmoothedValue(gy3y, mappedEventY) * -1.0;
+//   gy3z = getSmoothedValue(gy3z, mappedEventZ);
+// }
