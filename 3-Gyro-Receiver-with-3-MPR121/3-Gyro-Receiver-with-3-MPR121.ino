@@ -24,14 +24,14 @@
  ******** ******** ******** */
  
 boolean isCapActive1 = true; // prod: true
-boolean isCapActive2 = false; // prod: true
-boolean isCapActive3 = false; // prod: true
-boolean forceCapTouched1 = true;  // prod: false
-boolean forceCapTouched2 = true; // prod: false
-boolean forceCapTouched3 = true; // prod: false
+boolean isCapActive2 = true; // prod: true
+boolean isCapActive3 = true; // prod: true
+boolean forceCapTouched1 = false;  // prod: false
+boolean forceCapTouched2 = false; // prod: false
+boolean forceCapTouched3 = false; // prod: false
 
 boolean isBnoActive1 = true;  // prod: true
-boolean isBnoActive2 = true; // prod: true
+boolean isBnoActive2 = false; // prod: true
 boolean isBnoActive3 = true; // prod: true
 
 boolean singleHandMode = false;
