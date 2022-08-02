@@ -31,7 +31,7 @@ boolean forceCapTouched2 = false; // prod: false
 boolean forceCapTouched3 = false; // prod: false
 
 boolean isBnoActive1 = true;  // prod: true
-boolean isBnoActive2 = false; // prod: true
+boolean isBnoActive2 = true; // prod: true
 boolean isBnoActive3 = true; // prod: true
 
 boolean singleHandMode = false;
@@ -120,12 +120,12 @@ const uint8_t threshold=1;
 // and which pin to use to send signals. Note that for older NeoPixel
 // strips you might need to change the third parameter -- see the
 // strandtest example for more information on possible values.
-int LEDS_PLAYER_1_RIGHT = 6;
-int LEDS_PLAYER_1_LEFT = 7;
-int LEDS_PLAYER_2_RIGHT = 8;
-int LEDS_PLAYER_2_LEFT = 9;
-int LEDS_PLAYER_3_RIGHT = 10;
-int LEDS_PLAYER_3_LEFT = 11 ;
+int LEDS_PLAYER_1_RIGHT = 2;
+int LEDS_PLAYER_1_LEFT = 3;
+int LEDS_PLAYER_2_RIGHT = 4;
+int LEDS_PLAYER_2_LEFT = 5;
+int LEDS_PLAYER_3_RIGHT = 6;
+int LEDS_PLAYER_3_LEFT = 7;
 
 LED LEDsPlayers1Right(NUMPIXELS, LEDS_PLAYER_1_RIGHT);
 LED LEDsPlayers1Left( NUMPIXELS, LEDS_PLAYER_1_LEFT);
@@ -141,7 +141,7 @@ unsigned long timeOfLastDisconnectPlayer2 = disconnectFeedbackDuration;
 unsigned long timeOfLastDisconnectPlayer3 = disconnectFeedbackDuration;
 
 // Time player needs to be touching all touchpoints to be considered fully activated
-unsigned long preFullPreActivationDuration = 250;
+unsigned long preFullPreActivationDuration = 100;
 unsigned long timeofLastPreActivationStartPlayer1R = preFullPreActivationDuration;
 unsigned long timeofLastPreActivationStartPlayer2R = preFullPreActivationDuration;
 unsigned long timeofLastPreActivationStartPlayer3R = preFullPreActivationDuration;
@@ -544,5 +544,5 @@ void loop() {
 //  Serial.print(timeofLastPreActivationStartPlayer2);
 //  Serial.print(", ");
 //  Serial.println(timeofLastPreActivationStartPlayer3);
-  delay(100);
+  delay(50);
 }

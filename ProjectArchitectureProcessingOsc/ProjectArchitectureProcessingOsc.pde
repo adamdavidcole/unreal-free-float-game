@@ -17,8 +17,12 @@ NetAddress myRemoteLocation;
 Serial myPort;  // Create object from Serial class
 String val;     // Data received from the serial port
 
+boolean handshake;
+
 void setup() 
 {
+  handshake = false;
+   
   size(400,400);
   frameRate(25);
   /* start oscP5, listening for incoming messages at port 12000 */
@@ -46,9 +50,20 @@ void draw()
 {
   background(0);  
   
+  if (myPort.available() > 0 && !handshake) {
+    val = myPort.readStringUntil('\n');  
+   
+    if (val != null) {
+      println(val);
+      if (val.contains("Initialization Done")) {
+        println("SETUP COMPLETE");
+        handshake = true;
+      }
+    }
+  }
   
-  if ( myPort.available() > 0) 
-  {  // If data is available,
+  if ( myPort.available() > 0 && handshake) {  
+    // If data is available, and setup is c
     val = myPort.readStringUntil('\n');  
    
     if (val != null)
