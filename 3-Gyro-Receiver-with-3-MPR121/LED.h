@@ -22,7 +22,7 @@ class LED {
     void setStandbyLights();
     void setPreActive(int touchPoints);
     void setPreActiveBlink();
-    void setActive(int touchPointsCount);
+    void setActive(int r, int g, int b);
     void setDisconnected(unsigned long timeOfLastDisconnect);
 };
 

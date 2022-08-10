@@ -42,20 +42,20 @@ void setPlayer3LEDsToPreActive(int touchPointsRight, int touchPointsLeft) {
 
 // Set to ACTIVE pulse
 void setPlayer1LEDsToActive(int touchPointsCount) {
-  LEDsPlayers1Right.setActive(touchPointsCount);
-  LEDsPlayers1Left.setActive(touchPointsCount);
+  LEDsPlayers1Right.setActive(180, 180, 0);
+  LEDsPlayers1Left.setActive(180, 180, 0);
 }
 
 // Set to active pulse
 void setPlayer2LEDsToActive(int touchPointsCount) {
-  LEDsPlayers2Right.setActive(touchPointsCount);
-  LEDsPlayers2Left.setActive(touchPointsCount);
+  LEDsPlayers2Right.setActive(0, 0, 180);
+  LEDsPlayers2Left.setActive(0, 0, 180);
 }
 
 // Set to preactive pulse
 void setPlayer3LEDsToActive(int touchPointsCount) {
-  LEDsPlayers3Right.setActive(touchPointsCount);
-  LEDsPlayers3Left.setActive(touchPointsCount);
+  LEDsPlayers3Right.setActive(180, 25, 130);
+  LEDsPlayers3Left.setActive(180, 25, 130);
 }
 void setPlayer3LEDsToPreActiveBlink() {
   LEDsPlayers3Right.setPreActiveBlink();

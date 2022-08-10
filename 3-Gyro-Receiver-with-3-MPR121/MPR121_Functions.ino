@@ -18,8 +18,8 @@ void initializeMPRs(){
     while (1);
   }
 
-  int touchThreshold = 10;
-  int releaseThreshold = 8;
+  int touchThreshold = 8;
+  int releaseThreshold = 4;
   if (isCapActive1) cap1.setThresholds(touchThreshold,releaseThreshold);
   if (isCapActive2) cap2.setThresholds(touchThreshold,releaseThreshold);
   if (isCapActive3) cap3.setThresholds(touchThreshold,releaseThreshold);

@@ -66,15 +66,17 @@ void LED::setPreActiveBlink() {
   setPixelsColor(color(nextColor,nextColor,nextColor));
 }
 
-void LED::setActive(int touchPointsCount) {
+void LED::setActive(int r, int g, int b) {
   int baseBlueColor = 180;
   int blinkFactor = 75;
 
   int variation = sin(millis()/500.0) * blinkFactor;
 
-  int nextBlueColor = baseBlueColor + variation;
+  int nextRedColor = r + variation;
+  int nextGreenColor = g + variation;
+  int nextBlueColor = b + variation;
   
-  setPixelsColor(color(0,0,nextBlueColor));
+  setPixelsColor(color(r,g,b));
 }
 
 void LED::setDisconnected(unsigned long timeOfLastDisconnect) {

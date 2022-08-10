@@ -1,4 +1,4 @@
-float GYRO_RANGE_MIN_Z = -30.0;
+float GYRO_RANGE_MIN_Z = -15.0;
 float GYRO_RANGE_MAX_Z = 30.0;
 float GYRO_RANGE_MIN_Y = -15;
 float GYRO_RANGE_MAX_Y = 30;
